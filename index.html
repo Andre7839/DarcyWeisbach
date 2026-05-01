@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Darcy-Weisbach Friction Loss Calculator</title>
+<title>Head-losses Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
@@ -17,7 +17,7 @@
     --accent2: #3fb950;
     --accent3: #f78166;
     --accent4: #d2a8ff;
-    --text: #e6edf3;
+    --text: #c9d1d9;
     --text2: #8b949e;
     --text3: #6e7681;
     --yellow: #e3b341;
@@ -28,7 +28,7 @@
     --radius-lg: 12px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 16px; min-height: 100vh; }
 
   /* Header */
   header {
@@ -51,8 +51,8 @@
     font-family: var(--mono); font-size: 11px; color: var(--accent);
     letter-spacing: -0.5px; flex-shrink: 0;
   }
-  header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-  header p { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  header p { font-size: 13px; color: var(--text2); margin-top: 1px; }
 
   /* Unit toggle in header */
   .unit-toggle {
@@ -71,7 +71,7 @@
     border: none;
     border-radius: 16px;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     background: transparent;
@@ -86,7 +86,7 @@
   .unit-indicator {
     margin-left: 10px;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     color: var(--text3);
     border: 1px solid var(--border2);
     padding: 3px 10px;
@@ -100,7 +100,7 @@
   /* Nav tabs */
   .nav-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
   .nav-tab {
-    padding: 10px 20px; font-family: var(--sans); font-size: 13px; font-weight: 500;
+    padding: 10px 20px; font-family: var(--sans); font-size: 15px; font-weight: 500;
     cursor: pointer; background: transparent; border: none; color: var(--text2);
     border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s;
   }
@@ -112,7 +112,7 @@
 
   /* Section label */
   .section-label {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
     color: var(--text3); text-transform: uppercase; margin-bottom: 0.75rem; margin-top: 1.5rem;
   }
   .section-label:first-child { margin-top: 0; }
@@ -121,7 +121,7 @@
   .formula {
     background: var(--surface2); border: 1px solid var(--border2);
     border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 0.65rem 1rem; font-family: var(--mono); font-size: 12px;
+    padding: 0.65rem 1rem; font-family: var(--mono); font-size: 14px;
     color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7;
   }
   .formula span { color: var(--accent); }
@@ -133,16 +133,16 @@
 
   /* Fields */
   .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 11px; color: var(--text2); font-weight: 500; letter-spacing: 0.03em; }
+  .field label { font-size: 13px; color: var(--text2); font-weight: 500; letter-spacing: 0.03em; }
   .field input, .field select {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    color: var(--text); font-family: var(--mono); font-size: 13px;
+    color: var(--text); font-family: var(--mono); font-size: 15px;
     padding: 8px 12px; width: 100%; transition: border-color 0.15s; -webkit-appearance: none;
   }
   .field input:focus, .field select:focus {
     outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,0.1);
   }
-  .field .hint { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+  .field .hint { font-size: 12px; color: var(--text3); font-family: var(--mono); }
   .field select option { background: var(--surface2); }
   .spacer { height: 12px; }
 
@@ -151,7 +151,7 @@
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; margin-top: 1.5rem; padding: 11px 24px;
     background: var(--accent); color: #0d1117; border: none; border-radius: var(--radius);
-    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    font-family: var(--sans); font-size: 16px; font-weight: 600;
     cursor: pointer; transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.02em;
   }
   .calc-btn:hover { opacity: 0.88; }
@@ -160,7 +160,7 @@
   /* Error */
   .error-box {
     background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3);
-    border-radius: var(--radius); padding: 0.6rem 1rem; font-size: 12px;
+    border-radius: var(--radius); padding: 0.6rem 1rem; font-size: 14px;
     color: var(--red); margin-top: 1rem; display: none; font-family: var(--mono);
   }
   .error-box.show { display: block; }
@@ -168,25 +168,25 @@
   /* Results */
   .results-wrap { display: none; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
   .results-wrap.show { display: block; }
-  .results-title { font-size: 11px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .results-title { font-size: 13px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
 
   .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px; }
   .metric-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0.9rem 1rem; }
-  .metric-card .mc-label { font-size: 10px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .metric-card .mc-label { font-size: 12px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
   .metric-card .mc-value { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--text); line-height: 1.1; }
-  .metric-card .mc-unit { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
+  .metric-card .mc-unit { font-size: 12px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
   .metric-card.hl .mc-value { color: var(--accent); }
   .metric-card.warn .mc-value { color: var(--yellow); }
 
   .info-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
   .info-table tr { border-bottom: 1px solid var(--border2); }
   .info-table tr:last-child { border-bottom: none; }
-  .info-table td { padding: 6px 0; font-size: 12px; }
+  .info-table td { padding: 7px 0; font-size: 14px; }
   .info-table td:first-child { color: var(--text2); }
   .info-table td:last-child { text-align: right; font-family: var(--mono); color: var(--text); }
 
   /* Badges */
-  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-family: var(--mono); font-weight: 500; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 13px; font-family: var(--mono); font-weight: 500; }
   .badge-laminar { background: rgba(63,185,80,0.15); color: var(--accent2); }
   .badge-transitional { background: rgba(227,179,65,0.15); color: var(--yellow); }
   .badge-turbulent { background: rgba(88,166,255,0.15); color: var(--accent); }
@@ -196,7 +196,7 @@
   @media (max-width: 800px) { .calc-layout { grid-template-columns: 1fr; } }
 
   /* Lookup */
-  .lookup-intro { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7; max-width: 700px; }
+  .lookup-intro { font-size: 15px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7; max-width: 700px; }
   .lookup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
   @media (max-width: 800px) { .lookup-grid { grid-template-columns: 1fr; } }
 
@@ -205,14 +205,14 @@
   .lookup-card-header .icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
   .icon-pipe { background: rgba(88,166,255,0.15); }
   .icon-drop { background: rgba(63,185,80,0.15); }
-  .lookup-card-header h3 { font-size: 14px; font-weight: 600; }
-  .lookup-card-header p { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .lookup-card-header h3 { font-size: 16px; font-weight: 600; }
+  .lookup-card-header p { font-size: 13px; color: var(--text2); margin-top: 1px; }
 
   .lookup-search { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border2); }
   .lookup-search input {
     width: 100%; background: var(--bg); border: 1px solid var(--border2);
     border-radius: var(--radius); color: var(--text); font-family: var(--mono);
-    font-size: 12px; padding: 6px 10px;
+    font-size: 14px; padding: 6px 10px;
   }
   .lookup-search input:focus { outline: none; border-color: var(--accent); }
   .lookup-search input::placeholder { color: var(--text3); }
@@ -221,23 +221,23 @@
   .lookup-table-wrap::-webkit-scrollbar { width: 4px; }
   .lookup-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  .lookup-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .lookup-table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .lookup-table thead { position: sticky; top: 0; background: var(--surface2); z-index: 1; }
-  .lookup-table th { padding: 8px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-family: var(--mono); font-weight: 500; border-bottom: 1px solid var(--border2); }
+  .lookup-table th { padding: 8px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-family: var(--mono); font-weight: 500; border-bottom: 1px solid var(--border2); }
   .lookup-table td { padding: 7px 12px; border-bottom: 1px solid var(--border2); vertical-align: middle; }
   .lookup-table tbody tr:last-child td { border-bottom: none; }
   .lookup-table tbody tr:hover { background: var(--surface2); }
-  .lookup-table .use-btn { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--accent); font-size: 10px; font-family: var(--mono); padding: 2px 8px; cursor: pointer; white-space: nowrap; transition: background 0.1s; }
+  .lookup-table .use-btn { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--accent); font-size: 12px; font-family: var(--mono); padding: 2px 8px; cursor: pointer; white-space: nowrap; transition: background 0.1s; }
   .lookup-table .use-btn:hover { background: rgba(88,166,255,0.1); }
   .lookup-table .rough-val { font-family: var(--mono); color: var(--accent4); }
   .lookup-table .visc-val { font-family: var(--mono); color: var(--accent2); }
   .lookup-table .temp-val { color: var(--text2); }
   .lookup-table .mat-name { font-weight: 500; }
-  .lookup-table .mat-desc { font-size: 10px; color: var(--text3); margin-top: 1px; }
-  .use-note { font-size: 11px; color: var(--text3); font-family: var(--mono); padding: 0.6rem 1rem; border-top: 1px solid var(--border2); }
+  .lookup-table .mat-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .use-note { font-size: 13px; color: var(--text3); font-family: var(--mono); padding: 0.6rem 1rem; border-top: 1px solid var(--border2); }
 
   /* Footer */
-  footer { border-top: 1px solid var(--border); padding: 1.25rem 2rem; text-align: center; font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 3rem; }
+  footer { border-top: 1px solid var(--border); padding: 1.25rem 2rem; text-align: center; font-size: 13px; color: var(--text3); font-family: var(--mono); margin-top: 3rem; }
   footer a { color: var(--text3); text-decoration: none; }
   footer a:hover { color: var(--accent); }
 
@@ -245,7 +245,7 @@
   .toast {
     position: fixed; bottom: 1.5rem; right: 1.5rem;
     background: var(--surface2); border: 1px solid var(--accent); color: var(--accent);
-    font-family: var(--mono); font-size: 12px; padding: 0.6rem 1.2rem;
+    font-family: var(--mono); font-size: 14px; padding: 0.6rem 1.2rem;
     border-radius: var(--radius); opacity: 0; transform: translateY(10px);
     transition: all 0.25s; pointer-events: none; z-index: 999;
   }
@@ -256,7 +256,7 @@
     display: flex; align-items: center; gap: 8px;
     background: rgba(227,179,65,0.08); border: 1px solid rgba(227,179,65,0.25);
     border-radius: var(--radius); padding: 0.5rem 1rem;
-    font-family: var(--mono); font-size: 11px; color: var(--yellow);
+    font-family: var(--mono); font-size: 13px; color: var(--yellow);
     margin-bottom: 1.25rem;
   }
   .conv-banner span { opacity: 0.7; }
@@ -267,8 +267,8 @@
 <header>
   <div class="logo-mark">DW</div>
   <div>
-    <h1>Darcy-Weisbach Calculator</h1>
-    <p>Friction loss · Single pipe & multiple outlets · Christiansen method</p>
+    <h1>Head-losses Calculator</h1>
+    <p>This tool calculates friction losses in pipes using Darcy-Weisbach equation</p>
   </div>
   <div class="unit-toggle">
     <button class="unit-btn active" id="btn-si" onclick="setUnits('SI')">SI</button>
@@ -280,7 +280,7 @@
 <div class="wrapper">
 
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('single')">Single Pipe</button>
+    <button class="nav-tab active" onclick="switchTab('single')">Single Outlet</button>
     <button class="nav-tab" onclick="switchTab('multi')">Multiple Outlets</button>
     <button class="nav-tab" onclick="switchTab('lookup')">Reference Tables</button>
   </div>
@@ -615,7 +615,7 @@ function setUnits(sys) {
   const D = DEFAULTS[sys];
   const isImp = sys === 'IMP';
 
-  // Single pipe labels + defaults
+  // Single outlet labels + defaults
   document.getElementById('lbl-s-diam').textContent  = L.diam;
   document.getElementById('lbl-s-len').textContent   = L.len;
   document.getElementById('lbl-s-rough').textContent = L.rough;
