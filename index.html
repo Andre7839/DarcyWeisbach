@@ -5,1059 +5,1262 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Head-losses Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2330;
-    --border: #30363d;
-    --border2: #21262d;
-    --accent: #58a6ff;
-    --accent2: #3fb950;
-    --accent3: #f78166;
-    --accent4: #d2a8ff;
-    --text: #c9d1d9;
-    --text2: #8b949e;
-    --text3: #6e7681;
-    --yellow: #e3b341;
-    --red: #f85149;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'Syne', sans-serif;
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 16px; min-height: 100vh; }
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f7f8fa;
+  --surface3: #eef0f4;
+  --border: #d0d4db;
+  --border2: #e2e5ea;
+  --accent: #1a6fd4;
+  --accent-light: #e8f0fc;
+  --accent2: #1a8a3a;
+  --accent2-light: #e6f4ea;
+  --accent4: #6b21a8;
+  --accent4-light: #f3e8ff;
+  --text: #1a1c1e;
+  --text2: #3d4147;
+  --text3: #6b7280;
+  --yellow: #92400e;
+  --yellow-light: #fef3c7;
+  --red: #b91c1c;
+  --red-light: #fee2e2;
+  --sans: 'Inter', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; min-height: 100vh; line-height: 1.5; }
 
-  /* Header */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 1.25rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    position: sticky;
-    top: 0;
-    background: rgba(13,17,23,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .logo-mark {
-    width: 36px; height: 36px;
-    border: 1.5px solid var(--accent);
-    border-radius: var(--radius);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 11px; color: var(--accent);
-    letter-spacing: -0.5px; flex-shrink: 0;
-  }
-  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-  header p { font-size: 13px; color: var(--text2); margin-top: 1px; }
+/* ── Header ── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow);
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: -0.5px; flex-shrink: 0;
+}
+.logo-text h1 { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.logo-text p  { font-size: 12px; color: var(--text3); line-height: 1.3; }
 
-  /* Unit toggle in header */
-  .unit-toggle {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px;
-    flex-shrink: 0;
-  }
-  .unit-btn {
-    padding: 4px 14px;
-    border: none;
-    border-radius: 16px;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    background: transparent;
-    color: var(--text2);
-    transition: all 0.18s;
-    letter-spacing: 0.04em;
-  }
-  .unit-btn.active {
-    background: var(--accent);
-    color: #0d1117;
-  }
-  .unit-indicator {
-    margin-left: 10px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text3);
-    border: 1px solid var(--border2);
-    padding: 3px 10px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
+.unit-toggle {
+  margin-left: auto; display: flex; align-items: center;
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px; flex-shrink: 0;
+}
+.unit-btn {
+  padding: 5px 16px; border: none; border-radius: 16px;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; background: transparent; color: var(--text3);
+  transition: all 0.18s;
+}
+.unit-btn.active { background: var(--accent); color: #fff; }
 
-  /* Layout */
-  .wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+/* ── Nav bar ── */
+.nav-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex;
+  position: sticky;
+  top: 60px;
+  z-index: 190;
+}
+.nav-tab {
+  padding: 13px 22px; font-size: 14px; font-weight: 500;
+  cursor: pointer; background: transparent; border: none; color: var(--text3);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  transition: all 0.15s; letter-spacing: 0.01em;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
-  /* Nav tabs */
-  .nav-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
-  .nav-tab {
-    padding: 10px 20px; font-family: var(--sans); font-size: 15px; font-weight: 500;
-    cursor: pointer; background: transparent; border: none; color: var(--text2);
-    border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s;
-  }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* ── Panel pages — each fills its own full content area ── */
+.page { display: none; min-height: calc(100vh - 120px); }
+.page.active { display: block; }
 
-  .panel { display: none; }
-  .panel.active { display: block; }
+/* ── Page inner wrapper ── */
+.page-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
-  /* Section label */
-  .section-label {
-    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
-    color: var(--text3); text-transform: uppercase; margin-bottom: 0.75rem; margin-top: 1.5rem;
-  }
-  .section-label:first-child { margin-top: 0; }
+/* ── Pipe diagram card ── */
+.diag-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.75rem 1rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow);
+}
+.diag-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--text3); text-transform: uppercase; margin-bottom: 0.8rem;
+}
+.diag-card svg { width: 100%; height: auto; display: block; }
+.diag-caption {
+  font-size: 12px; color: var(--text3); margin-top: 0.65rem;
+  line-height: 1.55; font-style: italic;
+}
 
-  /* Formula */
-  .formula {
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 0.65rem 1rem; font-family: var(--mono); font-size: 14px;
-    color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7;
-  }
-  .formula span { color: var(--accent); }
+/* ── Calc grid (inputs + results side by side) ── */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 900px) { .calc-grid { grid-template-columns: 1fr; } }
 
-  /* Grids */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  @media (max-width: 600px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+/* ── Input card ── */
+.input-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.input-card-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface2);
+}
+.input-card-header h3 { font-size: 14px; font-weight: 700; color: var(--text); }
+.input-card-header p  { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.input-card-body { padding: 1.25rem; }
 
-  /* Fields */
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 13px; color: var(--text2); font-weight: 500; letter-spacing: 0.03em; }
-  .field input, .field select {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    color: var(--text); font-family: var(--mono); font-size: 15px;
-    padding: 8px 12px; width: 100%; transition: border-color 0.15s; -webkit-appearance: none;
-  }
-  .field input:focus, .field select:focus {
-    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,0.1);
-  }
-  .field .hint { font-size: 12px; color: var(--text3); font-family: var(--mono); }
-  .field select option { background: var(--surface2); }
-  .spacer { height: 12px; }
+/* ── Field groups ── */
+.field-group { margin-bottom: 1.25rem; }
+.field-group:last-child { margin-bottom: 0; }
+.group-label {
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 0.75rem; padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center; gap: 6px;
+}
+.gl-icon { font-size: 13px; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field label {
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  display: flex; align-items: baseline; gap: 6px;
+}
+.field label .sym { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+.field input, .field select {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-family: var(--mono); font-size: 14px;
+  padding: 8px 11px; width: 100%; transition: all 0.15s;
+}
+.field input:focus, .field select:focus {
+  outline: none; border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(26,111,212,0.12);
+}
+.field select option { background: var(--surface); }
+.field .desc { font-size: 11px; color: var(--text3); line-height: 1.45; margin-top: 2px; }
+.hint-link { font-size: 11px; color: var(--accent); cursor: pointer; text-decoration: underline dotted; }
 
-  /* Calc button */
-  .calc-btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; margin-top: 1.5rem; padding: 11px 24px;
-    background: var(--accent); color: #0d1117; border: none; border-radius: var(--radius);
-    font-family: var(--sans); font-size: 16px; font-weight: 600;
-    cursor: pointer; transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.02em;
-  }
-  .calc-btn:hover { opacity: 0.88; }
-  .calc-btn:active { transform: scale(0.98); }
+.calc-btn {
+  width: 100%; padding: 12px; margin-top: 1.25rem;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: var(--radius); font-family: var(--sans);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.calc-btn:hover  { background: #1558b0; }
+.calc-btn:active { transform: scale(0.98); }
 
-  /* Error */
-  .error-box {
-    background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3);
-    border-radius: var(--radius); padding: 0.6rem 1rem; font-size: 14px;
-    color: var(--red); margin-top: 1rem; display: none; font-family: var(--mono);
-  }
-  .error-box.show { display: block; }
+.error-box {
+  background: var(--red-light); border: 1px solid rgba(185,28,28,0.3);
+  border-radius: var(--radius); padding: 0.6rem 1rem; font-size: 13px;
+  color: var(--red); margin-top: 0.75rem; display: none; font-family: var(--mono);
+}
+.error-box.show { display: block; }
 
-  /* Results */
-  .results-wrap { display: none; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
-  .results-wrap.show { display: block; }
-  .results-title { font-size: 13px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+.conv-banner {
+  display: none; align-items: center; gap: 8px;
+  background: var(--yellow-light); border: 1px solid rgba(146,64,14,0.25);
+  border-radius: var(--radius); padding: 0.5rem 1rem;
+  font-size: 12px; color: var(--yellow); margin-bottom: 1rem;
+}
+.conv-banner.show { display: flex; }
 
-  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px; }
-  .metric-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0.9rem 1rem; }
-  .metric-card .mc-label { font-size: 12px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
-  .metric-card .mc-value { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--text); line-height: 1.1; }
-  .metric-card .mc-unit { font-size: 12px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
-  .metric-card.hl .mc-value { color: var(--accent); }
-  .metric-card.warn .mc-value { color: var(--yellow); }
+/* ── Results column ── */
+.results-col { display: flex; flex-direction: column; gap: 1.25rem; }
 
-  .info-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-  .info-table tr { border-bottom: 1px solid var(--border2); }
-  .info-table tr:last-child { border-bottom: none; }
-  .info-table td { padding: 7px 0; font-size: 14px; }
-  .info-table td:first-child { color: var(--text2); }
-  .info-table td:last-child { text-align: right; font-family: var(--mono); color: var(--text); }
+.results-placeholder {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text3);
+  font-size: 14px;
+}
+.results-placeholder .ph-icon { font-size: 36px; margin-bottom: 0.75rem; opacity: 0.4; }
+.results-placeholder p { max-width: 260px; margin: 0 auto; line-height: 1.6; }
 
-  /* Badges */
-  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 13px; font-family: var(--mono); font-weight: 500; }
-  .badge-laminar { background: rgba(63,185,80,0.15); color: var(--accent2); }
-  .badge-transitional { background: rgba(227,179,65,0.15); color: var(--yellow); }
-  .badge-turbulent { background: rgba(88,166,255,0.15); color: var(--accent); }
+.results-main { display: none; flex-direction: column; gap: 1.25rem; }
+.results-main.show { display: flex; }
 
-  /* Two-col calc layout */
-  .calc-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
-  @media (max-width: 800px) { .calc-layout { grid-template-columns: 1fr; } }
+/* ── Result cards ── */
+.res-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.res-card-header {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface2);
+  display: flex; align-items: center; gap: 8px;
+}
+.res-card-header h4 { font-size: 13px; font-weight: 600; color: var(--text); }
+.rch-badge {
+  margin-left: auto; font-size: 10px; font-family: var(--mono);
+  background: var(--accent-light); color: var(--accent);
+  padding: 2px 8px; border-radius: 20px;
+}
+.res-card-body { padding: 1rem 1.25rem; }
 
-  /* Lookup */
-  .lookup-intro { font-size: 15px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7; max-width: 700px; }
-  .lookup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-  @media (max-width: 800px) { .lookup-grid { grid-template-columns: 1fr; } }
+/* ── Metric tiles ── */
+.metric-tiles   { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.metric-tiles-2 { grid-template-columns: repeat(2,1fr); }
+.metric-tile {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+}
+.mt-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.mt-value { font-family: var(--mono); font-size: 21px; font-weight: 500; color: var(--text); line-height: 1; }
+.mt-unit  { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
+.mt-accent .mt-value { color: var(--accent); }
+.mt-orange .mt-value { color: var(--yellow); }
 
-  .lookup-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .lookup-card-header { padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border2); display: flex; align-items: center; gap: 10px; }
-  .lookup-card-header .icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-  .icon-pipe { background: rgba(88,166,255,0.15); }
-  .icon-drop { background: rgba(63,185,80,0.15); }
-  .lookup-card-header h3 { font-size: 16px; font-weight: 600; }
-  .lookup-card-header p { font-size: 13px; color: var(--text2); margin-top: 1px; }
+/* ── Regime pill ── */
+.regime-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: var(--mono); }
+.regime-pill::before { content:''; width:7px; height:7px; border-radius:50%; display:inline-block; }
+.rp-laminar     { background: var(--accent2-light); color: var(--accent2); }
+.rp-laminar::before { background: var(--accent2); }
+.rp-transitional { background: var(--yellow-light); color: var(--yellow); }
+.rp-transitional::before { background: var(--yellow); }
+.rp-turbulent   { background: var(--accent-light); color: var(--accent); }
+.rp-turbulent::before { background: var(--accent); }
 
-  .lookup-search { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border2); }
-  .lookup-search input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border2);
-    border-radius: var(--radius); color: var(--text); font-family: var(--mono);
-    font-size: 14px; padding: 6px 10px;
-  }
-  .lookup-search input:focus { outline: none; border-color: var(--accent); }
-  .lookup-search input::placeholder { color: var(--text3); }
+/* ── Detail table ── */
+.detail-table { width: 100%; border-collapse: collapse; }
+.detail-table tr { border-bottom: 1px solid var(--border2); }
+.detail-table tr:last-child { border-bottom: none; }
+.detail-table td { padding: 7px 0; font-size: 13px; vertical-align: top; }
+.detail-table td:first-child { color: var(--text3); width: 55%; }
+.detail-table td:last-child  { font-family: var(--mono); font-weight: 500; text-align: right; }
+.detail-table .expl { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; font-family: var(--sans); }
 
-  .lookup-table-wrap { max-height: 420px; overflow-y: auto; }
-  .lookup-table-wrap::-webkit-scrollbar { width: 4px; }
-  .lookup-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ── Interp card ── */
+.interp-card {
+  background: var(--accent-light);
+  border: 1px solid rgba(26,111,212,0.2);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+  margin-top: 12px;
+}
+.interp-card strong { color: var(--accent); }
 
-  .lookup-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .lookup-table thead { position: sticky; top: 0; background: var(--surface2); z-index: 1; }
-  .lookup-table th { padding: 8px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-family: var(--mono); font-weight: 500; border-bottom: 1px solid var(--border2); }
-  .lookup-table td { padding: 7px 12px; border-bottom: 1px solid var(--border2); vertical-align: middle; }
-  .lookup-table tbody tr:last-child td { border-bottom: none; }
-  .lookup-table tbody tr:hover { background: var(--surface2); }
-  .lookup-table .use-btn { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--accent); font-size: 12px; font-family: var(--mono); padding: 2px 8px; cursor: pointer; white-space: nowrap; transition: background 0.1s; }
-  .lookup-table .use-btn:hover { background: rgba(88,166,255,0.1); }
-  .lookup-table .rough-val { font-family: var(--mono); color: var(--accent4); }
-  .lookup-table .visc-val { font-family: var(--mono); color: var(--accent2); }
-  .lookup-table .temp-val { color: var(--text2); }
-  .lookup-table .mat-name { font-weight: 500; }
-  .lookup-table .mat-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
-  .use-note { font-size: 13px; color: var(--text3); font-family: var(--mono); padding: 0.6rem 1rem; border-top: 1px solid var(--border2); }
+/* ── Christiansen summary bar ── */
+.christn-visual {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 12px; color: var(--text3); font-family: var(--mono);
+  margin-top: 0.5rem; line-height: 1.8;
+}
 
-  /* Footer */
-  footer { border-top: 1px solid var(--border); padding: 1.25rem 2rem; text-align: center; font-size: 13px; color: var(--text3); font-family: var(--mono); margin-top: 3rem; }
-  footer a { color: var(--text3); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
+/* ── Lookup page ── */
+.lookup-intro {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 14px; color: var(--text2); line-height: 1.65;
+  box-shadow: var(--shadow);
+}
+.lookup-intro strong { color: var(--accent); }
+.lookup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 800px) { .lookup-grid { grid-template-columns: 1fr; } }
+.lookup-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+}
+.lookup-card-header {
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border2);
+  background: var(--surface2); display: flex; align-items: flex-start; gap: 12px;
+}
+.lch-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; margin-top:1px; }
+.lch-icon-blue  { background: var(--accent-light); }
+.lch-icon-green { background: var(--accent2-light); }
+.lookup-card-header h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+.lookup-card-header p  { font-size: 12px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+.lookup-search { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border2); }
+.lookup-search input {
+  width: 100%; background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text); font-size: 13px; padding: 7px 11px;
+}
+.lookup-search input:focus { outline: none; border-color: var(--accent); }
+.lookup-search input::placeholder { color: var(--text3); }
+.lookup-table-wrap { max-height: 420px; overflow-y: auto; }
+.lookup-table-wrap::-webkit-scrollbar { width: 4px; }
+.lookup-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.lookup-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.lookup-table thead { position: sticky; top: 0; background: var(--surface3); z-index: 1; }
+.lookup-table th { padding: 8px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 600; border-bottom: 1px solid var(--border2); }
+.lookup-table td { padding: 8px 12px; border-bottom: 1px solid var(--border2); vertical-align: middle; }
+.lookup-table tbody tr:last-child td { border-bottom: none; }
+.lookup-table tbody tr:hover { background: var(--surface3); }
+.mat-name  { font-weight: 600; color: var(--text); }
+.mat-cond  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.rough-val { font-family: var(--mono); font-size: 12px; color: var(--accent4); }
+.visc-val  { font-family: var(--mono); font-size: 12px; color: var(--accent2); }
+.temp-val  { color: var(--text2); font-weight: 500; }
+.use-btn {
+  background: var(--accent-light); border: 1px solid rgba(26,111,212,0.25);
+  border-radius: 5px; color: var(--accent); font-size: 11px; font-weight: 600;
+  padding: 3px 10px; cursor: pointer; white-space: nowrap; transition: background 0.12s;
+}
+.use-btn:hover { background: rgba(26,111,212,0.18); }
+.lookup-note { font-size: 12px; color: var(--text3); padding: 0.6rem 1rem; border-top: 1px solid var(--border2); }
 
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 1.5rem; right: 1.5rem;
-    background: var(--surface2); border: 1px solid var(--accent); color: var(--accent);
-    font-family: var(--mono); font-size: 14px; padding: 0.6rem 1.2rem;
-    border-radius: var(--radius); opacity: 0; transform: translateY(10px);
-    transition: all 0.25s; pointer-events: none; z-index: 999;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border); padding: 1.25rem 2rem;
+  text-align: center; font-size: 12px; color: var(--text3);
+  margin-top: 3rem; background: var(--surface);
+}
+footer a { color: var(--accent); text-decoration: none; }
 
-  /* Unit conversion banner */
-  .conv-banner {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(227,179,65,0.08); border: 1px solid rgba(227,179,65,0.25);
-    border-radius: var(--radius); padding: 0.5rem 1rem;
-    font-family: var(--mono); font-size: 13px; color: var(--yellow);
-    margin-bottom: 1.25rem;
-  }
-  .conv-banner span { opacity: 0.7; }
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  background: var(--text); color: #fff;
+  font-size: 13px; padding: 0.65rem 1.25rem;
+  border-radius: var(--radius); opacity: 0; transform: translateY(8px);
+  transition: all 0.22s; pointer-events: none; z-index: 999;
+  box-shadow: var(--shadow-md);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
 
+<!-- ═══════════ HEADER ═══════════ -->
 <header>
-  <div class="logo-mark">DW</div>
-  <div>
-    <h1>Head-losses Calculator</h1>
-    <p>This tool calculates friction losses in pipes using Darcy-Weisbach equation</p>
+  <div class="logo">
+    <div class="logo-icon">hf</div>
+    <div class="logo-text">
+      <h1>Head-losses Calculator</h1>
+      <p>Darcy-Weisbach · Colebrook-White · Christiansen</p>
+    </div>
   </div>
   <div class="unit-toggle">
-    <button class="unit-btn active" id="btn-si" onclick="setUnits('SI')">SI</button>
-    <button class="unit-btn" id="btn-imp" onclick="setUnits('IMP')">Imperial</button>
+    <button class="unit-btn active" id="btn-si"  onclick="setUnits('SI')">SI</button>
+    <button class="unit-btn"        id="btn-imp" onclick="setUnits('IMP')">Imperial</button>
   </div>
-  <div class="unit-indicator" id="unit-indicator">m · kg · Pa·s</div>
 </header>
 
-<div class="wrapper">
-
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('single')">Single Outlet</button>
-    <button class="nav-tab" onclick="switchTab('multi')">Multiple Outlets</button>
-    <button class="nav-tab" onclick="switchTab('lookup')">Reference Tables</button>
-  </div>
-
-  <!-- SINGLE PIPE -->
-  <div class="panel active" id="panel-single">
-    <div class="calc-layout">
-      <div>
-        <div class="formula">
-          <span>hf</span> = f · (L/D) · (V²/2g)<br>
-          <span>f</span> = Colebrook-White (turbulent) or 64/Re (laminar)<br>
-          <span>Re</span> = ρ·V·D / μ
-        </div>
-
-        <div id="s-conv-banner" class="conv-banner" style="display:none">
-          <span>⚑</span> Inputs in imperial units — internally converted to SI for calculation
-        </div>
-
-        <div class="section-label">Pipe parameters</div>
-        <div class="grid2">
-          <div class="field">
-            <label id="lbl-s-diam">Pipe diameter D (m)</label>
-            <input type="number" id="s-diam" value="0.025" step="0.001" min="0.001" />
-          </div>
-          <div class="field">
-            <label id="lbl-s-len">Pipe length L (m)</label>
-            <input type="number" id="s-len" value="50" step="1" min="0.01" />
-          </div>
-        </div>
-        <div class="spacer"></div>
-        <div class="grid2">
-          <div class="field">
-            <label id="lbl-s-rough">Roughness ε (m)</label>
-            <input type="number" id="s-rough" value="0.0000013" step="0.0000001" min="0" />
-            <span class="hint">→ use Reference Tables to look up</span>
-          </div>
-          <div class="field">
-            <label id="lbl-s-flow">Flow rate Q (m³/h)</label>
-            <input type="number" id="s-flow" value="2.5" step="0.1" min="0.001" />
-          </div>
-        </div>
-
-        <div class="section-label">Fluid properties</div>
-        <div class="grid3">
-          <div class="field">
-            <label id="lbl-s-rho">Density ρ (kg/m³)</label>
-            <input type="number" id="s-rho" value="1000" step="1" min="1" />
-          </div>
-          <div class="field">
-            <label id="lbl-s-mu">Viscosity μ (Pa·s)</label>
-            <input type="number" id="s-mu" value="0.001002" step="0.0001" min="0.000001" />
-            <span class="hint">→ use Reference Tables to look up</span>
-          </div>
-          <div class="field">
-            <label id="lbl-s-hup">Upstream head (m)</label>
-            <input type="number" id="s-hup" value="20" step="0.5" />
-          </div>
-        </div>
-
-        <button class="calc-btn" onclick="calcSingle()">▶ Calculate</button>
-        <div class="error-box" id="s-error"></div>
-      </div>
-
-      <div class="results-wrap" id="s-results">
-        <div class="results-title">// Results</div>
-        <div class="metrics-grid">
-          <div class="metric-card"><div class="mc-label">Velocity</div><div class="mc-value" id="s-vel">—</div><div class="mc-unit" id="u-s-vel">m/s</div></div>
-          <div class="metric-card"><div class="mc-label">Reynolds No.</div><div class="mc-value" id="s-re">—</div><div class="mc-unit">dimensionless</div></div>
-          <div class="metric-card"><div class="mc-label">Regime</div><div class="mc-value" id="s-regime" style="font-size:14px;padding-top:2px;">—</div><div class="mc-unit">&nbsp;</div></div>
-        </div>
-        <div class="metrics-grid">
-          <div class="metric-card"><div class="mc-label">Friction factor f</div><div class="mc-value" id="s-f">—</div><div class="mc-unit">Darcy-Weisbach</div></div>
-          <div class="metric-card hl"><div class="mc-label">Friction loss hf</div><div class="mc-value" id="s-hf">—</div><div class="mc-unit" id="u-s-hf">m (head)</div></div>
-        </div>
-        <table class="info-table">
-          <tr><td>Upstream pressure head</td><td id="s-hup-out">—</td></tr>
-          <tr><td>Downstream pressure head</td><td id="s-hdown-out">—</td></tr>
-          <tr><td>Pipe cross-section area</td><td id="s-area">—</td></tr>
-          <tr><td>Relative roughness ε/D</td><td id="s-rrel">—</td></tr>
-          <tr><td>Kinematic viscosity ν</td><td id="s-nu">—</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- MULTIPLE OUTLETS -->
-  <div class="panel" id="panel-multi">
-    <div class="calc-layout">
-      <div>
-        <div class="formula">
-          <span>hl</span> = F · hf (full-flow friction loss)<br>
-          <span>F</span> = Christiansen adjustment factor<br>
-          <span>F</span> = (1/N) · Σ[(k/N)^m], m = 1.852
-        </div>
-
-        <div id="m-conv-banner" class="conv-banner" style="display:none">
-          <span>⚑</span> Inputs in imperial units — internally converted to SI for calculation
-        </div>
-
-        <div class="section-label">Pipe parameters</div>
-        <div class="grid2">
-          <div class="field">
-            <label id="lbl-m-diam">Pipe diameter D (m)</label>
-            <input type="number" id="m-diam" value="0.025" step="0.001" min="0.001" />
-          </div>
-          <div class="field">
-            <label id="lbl-m-len">Total pipe length L (m)</label>
-            <input type="number" id="m-len" value="50" step="1" min="0.01" />
-          </div>
-        </div>
-        <div class="spacer"></div>
-        <div class="grid2">
-          <div class="field">
-            <label id="lbl-m-rough">Roughness ε (m)</label>
-            <input type="number" id="m-rough" value="0.0000013" step="0.0000001" min="0" />
-          </div>
-          <div class="field">
-            <label id="lbl-m-flow">Total flow rate Q (m³/h)</label>
-            <input type="number" id="m-flow" value="2.5" step="0.1" min="0.001" />
-          </div>
-        </div>
-
-        <div class="section-label">Outlet configuration</div>
-        <div class="grid2">
-          <div class="field">
-            <label>Number of outlets N</label>
-            <input type="number" id="m-outlets" value="40" step="1" min="2" max="1000" />
-          </div>
-          <div class="field">
-            <label>First outlet position</label>
-            <select id="m-first">
-              <option value="1">At s = L/N (standard)</option>
-              <option value="0">At pipe inlet s = 0</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="section-label">Fluid properties</div>
-        <div class="grid3">
-          <div class="field">
-            <label id="lbl-m-rho">Density ρ (kg/m³)</label>
-            <input type="number" id="m-rho" value="1000" step="1" min="1" />
-          </div>
-          <div class="field">
-            <label id="lbl-m-mu">Viscosity μ (Pa·s)</label>
-            <input type="number" id="m-mu" value="0.001002" step="0.0001" min="0.000001" />
-          </div>
-          <div class="field">
-            <label id="lbl-m-hup">Upstream head (m)</label>
-            <input type="number" id="m-hup" value="20" step="0.5" />
-          </div>
-        </div>
-
-        <button class="calc-btn" onclick="calcMulti()">▶ Calculate with Christiansen</button>
-        <div class="error-box" id="m-error"></div>
-      </div>
-
-      <div class="results-wrap" id="m-results">
-        <div class="results-title">// Results</div>
-        <div class="metrics-grid">
-          <div class="metric-card"><div class="mc-label">Inlet velocity</div><div class="mc-value" id="m-vel">—</div><div class="mc-unit" id="u-m-vel">m/s</div></div>
-          <div class="metric-card"><div class="mc-label">Reynolds No.</div><div class="mc-value" id="m-re">—</div><div class="mc-unit">dimensionless</div></div>
-          <div class="metric-card warn"><div class="mc-label">Christiansen F</div><div class="mc-value" id="m-F">—</div><div class="mc-unit">adjustment factor</div></div>
-        </div>
-        <div class="metrics-grid">
-          <div class="metric-card"><div class="mc-label">Friction factor f</div><div class="mc-value" id="m-f">—</div><div class="mc-unit">Darcy-Weisbach</div></div>
-          <div class="metric-card"><div class="mc-label">Single-pipe hf</div><div class="mc-value" id="m-hf-single">—</div><div class="mc-unit" id="u-m-hfs">m (no outlets)</div></div>
-          <div class="metric-card hl"><div class="mc-label">Adjusted loss hl</div><div class="mc-value" id="m-hl">—</div><div class="mc-unit" id="u-m-hl">m (with outlets)</div></div>
-        </div>
-        <table class="info-table">
-          <tr><td>Upstream pressure head</td><td id="m-hup-out">—</td></tr>
-          <tr><td>Downstream pressure head</td><td id="m-hdown-out">—</td></tr>
-          <tr><td>Flow per outlet</td><td id="m-qoutlet">—</td></tr>
-          <tr><td>Outlet spacing</td><td id="m-spacing">—</td></tr>
-          <tr><td>Relative roughness ε/D</td><td id="m-rrel">—</td></tr>
-          <tr><td>Friction reduction vs. single pipe</td><td id="m-reduction">—</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- REFERENCE TABLES -->
-  <div class="panel" id="panel-lookup">
-    <p class="lookup-intro">
-      Click <strong style="color:var(--accent)">Use value</strong> on any row to populate roughness or viscosity into both calculator panels.
-      Values are automatically converted to match the active unit system.
-    </p>
-
-    <div class="lookup-grid">
-
-      <!-- Pipe Roughness -->
-      <div class="lookup-card">
-        <div class="lookup-card-header">
-          <div class="icon icon-pipe">⬡</div>
-          <div>
-            <h3>Pipe roughness ε</h3>
-            <p id="rough-unit-label">Absolute roughness by material</p>
-          </div>
-        </div>
-        <div class="lookup-search">
-          <input type="text" id="rough-search" placeholder="Filter by material or condition..." oninput="filterRoughness()" />
-        </div>
-        <div class="lookup-table-wrap">
-          <table class="lookup-table">
-            <thead>
-              <tr>
-                <th>Material</th>
-                <th>Condition</th>
-                <th id="th-rough-val">ε (m)</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="rough-tbody"></tbody>
-          </table>
-        </div>
-        <div class="use-note">* Mid-range value applied when a range is given</div>
-      </div>
-
-      <!-- Water Viscosity -->
-      <div class="lookup-card">
-        <div class="lookup-card-header">
-          <div class="icon icon-drop">💧</div>
-          <div>
-            <h3>Water viscosity μ</h3>
-            <p>Dynamic viscosity vs temperature</p>
-          </div>
-        </div>
-        <div class="lookup-search">
-          <input type="text" id="visc-search" placeholder="Filter by temperature..." oninput="filterViscosity()" />
-        </div>
-        <div class="lookup-table-wrap">
-          <table class="lookup-table">
-            <thead>
-              <tr>
-                <th id="th-temp">Temp (°C)</th>
-                <th id="th-mu">μ (Pa·s)</th>
-                <th id="th-rho">ρ (kg/m³)</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="visc-tbody"></tbody>
-          </table>
-        </div>
-        <div class="use-note" id="visc-note">* ρ and μ values applied to both calculator panels</div>
-      </div>
-
-    </div>
-  </div>
-
+<!-- ═══════════ NAV TABS ═══════════ -->
+<div class="nav-bar">
+  <button class="nav-tab active" onclick="switchTab('single')">Single Outlet</button>
+  <button class="nav-tab"        onclick="switchTab('multi')">Multiple Outlets</button>
+  <button class="nav-tab"        onclick="switchTab('lookup')">Reference Tables</button>
 </div>
 
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 1 — SINGLE OUTLET
+════════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-single">
+<div class="page-inner">
+
+  <!-- Pipe diagram -->
+  <div class="diag-card">
+    <div class="diag-label">Single Outlet — What this calculates</div>
+    <svg viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="s-arr"     markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#1a6fd4"/></marker>
+        <marker id="s-arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#b91c1c"/></marker>
+      </defs>
+      <!-- Pipe body -->
+      <rect x="90" y="44" width="490" height="38" rx="4" fill="#dbeafe" stroke="#1a6fd4" stroke-width="1.5"/>
+      <!-- Flow Q in -->
+      <line x1="20" y1="63" x2="83" y2="63" stroke="#1a6fd4" stroke-width="2.5" marker-end="url(#s-arr)"/>
+      <text x="22" y="54" font-size="12" fill="#1a6fd4" font-family="Inter,sans-serif" font-weight="700">Q</text>
+      <!-- Single outlet block at end -->
+      <rect x="580" y="36" width="20" height="54" rx="3" fill="#fff" stroke="#1a6fd4" stroke-width="1.5"/>
+      <!-- Flow Q out -->
+      <line x1="600" y1="63" x2="660" y2="63" stroke="#1a6fd4" stroke-width="2.5" marker-end="url(#s-arr)"/>
+      <text x="664" y="67" font-size="12" fill="#1a6fd4" font-family="Inter,sans-serif" font-weight="700">Q</text>
+      <!-- D annotation -->
+      <line x1="77" y1="44" x2="77" y2="82" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,3"/>
+      <line x1="73" y1="44" x2="81" y2="44" stroke="#6b7280" stroke-width="1"/>
+      <line x1="73" y1="82" x2="81" y2="82" stroke="#6b7280" stroke-width="1"/>
+      <text x="57" y="67" font-size="11" fill="#6b7280" font-family="Inter,sans-serif" font-weight="600">D</text>
+      <!-- L arrow -->
+      <line x1="92"  y1="97" x2="578" y2="97" stroke="#3d4147" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="320" y="112" text-anchor="middle" font-size="11" fill="#3d4147" font-family="Inter,sans-serif">← Pipe length L →</text>
+      <!-- hf loss arrow -->
+      <line x1="92"  y1="24" x2="578" y2="24" stroke="#b91c1c" stroke-width="1.5" marker-end="url(#s-arr-red)"/>
+      <line x1="92"  y1="20" x2="92"  y2="28" stroke="#b91c1c" stroke-width="1.5"/>
+      <text x="320" y="19" text-anchor="middle" font-size="11" fill="#b91c1c" font-family="Inter,sans-serif" font-weight="600">hf  =  f · (L/D) · V²/2g   friction head loss</text>
+      <!-- H_up / H_down -->
+      <text x="90"  y="128" text-anchor="middle" font-size="10" fill="#6b7280" font-family="Inter,sans-serif">H_up</text>
+      <text x="588" y="128" text-anchor="middle" font-size="10" fill="#b91c1c" font-family="Inter,sans-serif">H_down = H_up − hf</text>
+      <!-- Outlet label -->
+      <text x="590" y="31" text-anchor="middle" font-size="10" fill="#1a6fd4" font-family="Inter,sans-serif" font-weight="600">1 outlet</text>
+    </svg>
+    <div class="diag-caption">The entire flow Q travels through the full pipe length L and exits at a single outlet. Friction loss hf applies over the whole length.</div>
+  </div>
+
+  <!-- Calc grid -->
+  <div class="calc-grid">
+
+    <!-- Inputs -->
+    <div class="input-card">
+      <div class="input-card-header">
+        <h3>Input Parameters</h3>
+        <p>Pipe geometry, flow conditions, and fluid properties</p>
+      </div>
+      <div class="input-card-body">
+        <div id="s-conv-banner" class="conv-banner">⚑ Imperial inputs — converted to SI internally</div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">📐</span> Pipe geometry</div>
+          <div class="field-row">
+            <div class="field">
+              <label><span class="sym">D</span> <span id="lbl-s-diam">Diameter (m)</span></label>
+              <input type="number" id="s-diam" value="0.025" step="0.001" min="0.001"/>
+              <span class="desc">Internal pipe diameter</span>
+            </div>
+            <div class="field">
+              <label><span class="sym">L</span> <span id="lbl-s-len">Length (m)</span></label>
+              <input type="number" id="s-len" value="50" step="1" min="0.01"/>
+              <span class="desc">Total pipe length</span>
+            </div>
+          </div>
+          <div class="field">
+            <label><span class="sym">ε</span> <span id="lbl-s-rough">Roughness (m)</span></label>
+            <input type="number" id="s-rough" value="0.0000013" step="0.0000001" min="0"/>
+            <span class="desc">Pipe wall roughness. <span class="hint-link" onclick="switchTab('lookup')">Look up by material →</span></span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">💧</span> Flow conditions</div>
+          <div class="field">
+            <label><span class="sym">Q</span> <span id="lbl-s-flow">Flow rate (m³/h)</span></label>
+            <input type="number" id="s-flow" value="2.5" step="0.1" min="0.001"/>
+            <span class="desc">Volumetric flow rate through the pipe</span>
+          </div>
+          <div class="field">
+            <label><span class="sym">H</span> <span id="lbl-s-hup">Upstream head (m)</span></label>
+            <input type="number" id="s-hup" value="20" step="0.5"/>
+            <span class="desc">Pressure head at pipe inlet</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">🧪</span> Fluid properties</div>
+          <div class="field-row">
+            <div class="field">
+              <label><span class="sym">ρ</span> <span id="lbl-s-rho">Density (kg/m³)</span></label>
+              <input type="number" id="s-rho" value="1000" step="1" min="1"/>
+            </div>
+            <div class="field">
+              <label><span class="sym">μ</span> <span id="lbl-s-mu">Viscosity (Pa·s)</span></label>
+              <input type="number" id="s-mu" value="0.001002" step="0.0001" min="0.000001"/>
+              <span class="desc"><span class="hint-link" onclick="switchTab('lookup')">Look up by temperature →</span></span>
+            </div>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcSingle()">▶ Calculate Friction Loss</button>
+        <div class="error-box" id="s-error"></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-col">
+      <div class="results-placeholder" id="s-placeholder">
+        <div class="ph-icon">📊</div>
+        <p>Enter pipe parameters and click <strong>Calculate</strong> to see results</p>
+      </div>
+
+      <div class="results-main" id="s-results">
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <h4>Flow Behaviour</h4>
+            <span class="rch-badge">Hydraulics</span>
+          </div>
+          <div class="res-card-body">
+            <div class="metric-tiles" style="margin-bottom:12px">
+              <div class="metric-tile">
+                <div class="mt-label">Velocity</div>
+                <div class="mt-value" id="s-vel">—</div>
+                <div class="mt-unit" id="u-s-vel">m/s</div>
+              </div>
+              <div class="metric-tile">
+                <div class="mt-label">Reynolds No.</div>
+                <div class="mt-value" id="s-re">—</div>
+                <div class="mt-unit">Re = ρVD/μ</div>
+              </div>
+              <div class="metric-tile">
+                <div class="mt-label">Flow Regime</div>
+                <div class="mt-value" id="s-regime" style="font-size:14px;padding-top:4px">—</div>
+                <div class="mt-unit">&nbsp;</div>
+              </div>
+            </div>
+            <div class="interp-card" id="s-regime-desc">Enter parameters to see flow regime.</div>
+          </div>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <h4>Friction Loss Results</h4>
+            <span class="rch-badge">Key output</span>
+          </div>
+          <div class="res-card-body">
+            <div class="metric-tiles metric-tiles-2" style="margin-bottom:12px">
+              <div class="metric-tile">
+                <div class="mt-label">Friction factor f</div>
+                <div class="mt-value" id="s-f">—</div>
+                <div class="mt-unit">Darcy-Weisbach (dimensionless)</div>
+              </div>
+              <div class="metric-tile mt-accent">
+                <div class="mt-label">Head loss hf</div>
+                <div class="mt-value" id="s-hf">—</div>
+                <div class="mt-unit" id="u-s-hf">m (water column)</div>
+              </div>
+            </div>
+            <table class="detail-table">
+              <tr><td>Upstream pressure head<span class="expl">Pressure at pipe inlet</span></td><td id="s-hup-out">—</td></tr>
+              <tr><td>Downstream pressure head<span class="expl">H_up − hf</span></td><td id="s-hdown-out">—</td></tr>
+              <tr><td>Pipe cross-section area<span class="expl">A = π D² / 4</span></td><td id="s-area">—</td></tr>
+              <tr><td>Relative roughness ε/D<span class="expl">Used in Colebrook-White</span></td><td id="s-rrel">—</td></tr>
+              <tr><td>Kinematic viscosity ν<span class="expl">ν = μ / ρ</span></td><td id="s-nu">—</td></tr>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /results-main -->
+    </div><!-- /results-col -->
+  </div><!-- /calc-grid -->
+
+</div><!-- /page-inner -->
+</div><!-- /page-single -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 2 — MULTIPLE OUTLETS
+════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-multi">
+<div class="page-inner">
+
+  <!-- Pipe diagram -->
+  <div class="diag-card">
+    <div class="diag-label">Multiple Outlets — What this calculates</div>
+    <svg viewBox="0 0 720 155" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="m-arr"       markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#1a6fd4"/></marker>
+        <marker id="m-arr-green" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#1a8a3a"/></marker>
+        <marker id="m-arr-red"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#b91c1c"/></marker>
+      </defs>
+
+      <!-- Flow Q in -->
+      <line x1="20" y1="52" x2="83" y2="52" stroke="#1a6fd4" stroke-width="2.5" marker-end="url(#m-arr)"/>
+      <text x="22" y="43" font-size="12" fill="#1a6fd4" font-family="Inter,sans-serif" font-weight="700">Q (total)</text>
+
+      <!-- Pipe body -->
+      <rect x="90" y="38" width="590" height="28" rx="3" fill="#dbeafe" stroke="#1a6fd4" stroke-width="1.5"/>
+
+      <!-- D annotation -->
+      <line x1="77" y1="38" x2="77" y2="66" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,3"/>
+      <line x1="73" y1="38" x2="81" y2="38" stroke="#6b7280" stroke-width="1"/>
+      <line x1="73" y1="66" x2="81" y2="66" stroke="#6b7280" stroke-width="1"/>
+      <text x="57" y="55" font-size="11" fill="#6b7280" font-family="Inter,sans-serif" font-weight="600">D</text>
+
+      <!-- 5 outlets evenly spaced -->
+      <!-- outlet 1 at x=195 -->
+      <rect x="189" y="66" width="12" height="20" rx="2" fill="#fff" stroke="#1a8a3a" stroke-width="1.5"/>
+      <line x1="195" y1="86" x2="195" y2="110" stroke="#1a8a3a" stroke-width="1.5" marker-end="url(#m-arr-green)"/>
+      <text x="195" y="122" text-anchor="middle" font-size="9" fill="#1a8a3a" font-family="Inter,sans-serif" font-weight="600">Q/N</text>
+
+      <!-- outlet 2 at x=305 -->
+      <rect x="299" y="66" width="12" height="20" rx="2" fill="#fff" stroke="#1a8a3a" stroke-width="1.5"/>
+      <line x1="305" y1="86" x2="305" y2="110" stroke="#1a8a3a" stroke-width="1.5" marker-end="url(#m-arr-green)"/>
+      <text x="305" y="122" text-anchor="middle" font-size="9" fill="#1a8a3a" font-family="Inter,sans-serif" font-weight="600">Q/N</text>
+
+      <!-- outlet 3 at x=420 -->
+      <rect x="414" y="66" width="12" height="20" rx="2" fill="#fff" stroke="#1a8a3a" stroke-width="1.5"/>
+      <line x1="420" y1="86" x2="420" y2="110" stroke="#1a8a3a" stroke-width="1.5" marker-end="url(#m-arr-green)"/>
+      <text x="420" y="122" text-anchor="middle" font-size="9" fill="#1a8a3a" font-family="Inter,sans-serif" font-weight="600">Q/N</text>
+
+      <!-- outlet 4 at x=535 -->
+      <rect x="529" y="66" width="12" height="20" rx="2" fill="#fff" stroke="#1a8a3a" stroke-width="1.5"/>
+      <line x1="535" y1="86" x2="535" y2="110" stroke="#1a8a3a" stroke-width="1.5" marker-end="url(#m-arr-green)"/>
+      <text x="535" y="122" text-anchor="middle" font-size="9" fill="#1a8a3a" font-family="Inter,sans-serif" font-weight="600">Q/N</text>
+
+      <!-- outlet 5 at x=650 -->
+      <rect x="644" y="66" width="12" height="20" rx="2" fill="#fff" stroke="#1a8a3a" stroke-width="1.5"/>
+      <line x1="650" y1="86" x2="650" y2="110" stroke="#1a8a3a" stroke-width="1.5" marker-end="url(#m-arr-green)"/>
+      <text x="650" y="122" text-anchor="middle" font-size="9" fill="#1a8a3a" font-family="Inter,sans-serif" font-weight="600">Q/N</text>
+
+      <!-- spacing brace between outlet 1 and 2 -->
+      <line x1="195" y1="28" x2="305" y2="28" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="195" y1="24" x2="195" y2="32" stroke="#6b7280" stroke-width="1"/>
+      <line x1="305" y1="24" x2="305" y2="32" stroke="#6b7280" stroke-width="1"/>
+      <text x="250" y="20" text-anchor="middle" font-size="10" fill="#6b7280" font-family="Inter,sans-serif">s = L / N</text>
+
+      <!-- total length L -->
+      <line x1="90"  y1="136" x2="680" y2="136" stroke="#3d4147" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="385" y="148" text-anchor="middle" font-size="11" fill="#3d4147" font-family="Inter,sans-serif">← Total pipe length L →</text>
+
+      <!-- Christiansen label -->
+      <text x="385" y="8" text-anchor="middle" font-size="11" fill="#92400e" font-family="Inter,sans-serif" font-weight="600">Adjusted loss:  hl = F × hf   where F = Christiansen factor (0 &lt; F &lt; 1)</text>
+    </svg>
+    <div class="diag-caption">Flow decreases along the pipe as each outlet draws Q/N. Because flow is not full along the entire length, friction loss is lower than in a single-outlet pipe. The Christiansen factor F corrects for this reduction.</div>
+  </div>
+
+  <!-- Calc grid -->
+  <div class="calc-grid">
+
+    <!-- Inputs -->
+    <div class="input-card">
+      <div class="input-card-header">
+        <h3>Input Parameters</h3>
+        <p>Pipe, outlet configuration, and fluid properties</p>
+      </div>
+      <div class="input-card-body">
+        <div id="m-conv-banner" class="conv-banner">⚑ Imperial inputs — converted to SI internally</div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">📐</span> Pipe geometry</div>
+          <div class="field-row">
+            <div class="field">
+              <label><span class="sym">D</span> <span id="lbl-m-diam">Diameter (m)</span></label>
+              <input type="number" id="m-diam" value="0.025" step="0.001" min="0.001"/>
+              <span class="desc">Internal pipe diameter</span>
+            </div>
+            <div class="field">
+              <label><span class="sym">L</span> <span id="lbl-m-len">Total length (m)</span></label>
+              <input type="number" id="m-len" value="50" step="1" min="0.01"/>
+              <span class="desc">Full lateral length</span>
+            </div>
+          </div>
+          <div class="field">
+            <label><span class="sym">ε</span> <span id="lbl-m-rough">Roughness (m)</span></label>
+            <input type="number" id="m-rough" value="0.0000013" step="0.0000001" min="0"/>
+            <span class="desc">Pipe wall roughness. <span class="hint-link" onclick="switchTab('lookup')">Look up by material →</span></span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">🔩</span> Outlet configuration</div>
+          <div class="field-row">
+            <div class="field">
+              <label><span class="sym">N</span> Number of outlets</label>
+              <input type="number" id="m-outlets" value="40" step="1" min="2" max="1000"/>
+              <span class="desc">Total outlets along the lateral</span>
+            </div>
+            <div class="field">
+              <label><span class="sym">s₁</span> First outlet at</label>
+              <select id="m-first">
+                <option value="1">s = L/N (standard spacing)</option>
+                <option value="0">s = 0 (at pipe inlet)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">💧</span> Flow conditions</div>
+          <div class="field">
+            <label><span class="sym">Q</span> <span id="lbl-m-flow">Total flow rate (m³/h)</span></label>
+            <input type="number" id="m-flow" value="2.5" step="0.1" min="0.001"/>
+            <span class="desc">Total flow entering the pipe at the inlet</span>
+          </div>
+          <div class="field">
+            <label><span class="sym">H</span> <span id="lbl-m-hup">Upstream head (m)</span></label>
+            <input type="number" id="m-hup" value="20" step="0.5"/>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="group-label"><span class="gl-icon">🧪</span> Fluid properties</div>
+          <div class="field-row">
+            <div class="field">
+              <label><span class="sym">ρ</span> <span id="lbl-m-rho">Density (kg/m³)</span></label>
+              <input type="number" id="m-rho" value="1000" step="1" min="1"/>
+            </div>
+            <div class="field">
+              <label><span class="sym">μ</span> <span id="lbl-m-mu">Viscosity (Pa·s)</span></label>
+              <input type="number" id="m-mu" value="0.001002" step="0.0001" min="0.000001"/>
+              <span class="desc"><span class="hint-link" onclick="switchTab('lookup')">Look up →</span></span>
+            </div>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcMulti()">▶ Calculate with Christiansen Factor</button>
+        <div class="error-box" id="m-error"></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-col">
+      <div class="results-placeholder" id="m-placeholder">
+        <div class="ph-icon">📊</div>
+        <p>Enter outlet configuration and click <strong>Calculate</strong> to see Christiansen-adjusted results</p>
+      </div>
+
+      <div class="results-main" id="m-results">
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <h4>Pipe Hydraulics (at inlet)</h4>
+            <span class="rch-badge">Full-flow conditions</span>
+          </div>
+          <div class="res-card-body">
+            <div class="metric-tiles">
+              <div class="metric-tile">
+                <div class="mt-label">Inlet velocity</div>
+                <div class="mt-value" id="m-vel">—</div>
+                <div class="mt-unit" id="u-m-vel">m/s</div>
+              </div>
+              <div class="metric-tile">
+                <div class="mt-label">Reynolds No.</div>
+                <div class="mt-value" id="m-re">—</div>
+                <div class="mt-unit">dimensionless</div>
+              </div>
+              <div class="metric-tile">
+                <div class="mt-label">Friction factor f</div>
+                <div class="mt-value" id="m-f">—</div>
+                <div class="mt-unit">Colebrook-White</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <h4>Christiansen Adjustment</h4>
+            <span class="rch-badge" style="background:var(--yellow-light);color:var(--yellow)">Multi-outlet correction</span>
+          </div>
+          <div class="res-card-body">
+            <div class="metric-tiles" style="margin-bottom:12px">
+              <div class="metric-tile mt-orange">
+                <div class="mt-label">Factor F</div>
+                <div class="mt-value" id="m-F">—</div>
+                <div class="mt-unit">Christiansen (0–1)</div>
+              </div>
+              <div class="metric-tile">
+                <div class="mt-label">Single-pipe hf</div>
+                <div class="mt-value" id="m-hf-single">—</div>
+                <div class="mt-unit" id="u-m-hfs">m (full flow)</div>
+              </div>
+              <div class="metric-tile mt-accent">
+                <div class="mt-label">Adjusted loss hl</div>
+                <div class="mt-value" id="m-hl">—</div>
+                <div class="mt-unit" id="u-m-hl">m = F × hf</div>
+              </div>
+            </div>
+            <div class="christn-visual" id="m-christn-vis">F · hf = — · — = —</div>
+          </div>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <h4>Lateral Details</h4>
+            <span class="rch-badge" style="background:var(--accent2-light);color:var(--accent2)">Per-outlet breakdown</span>
+          </div>
+          <div class="res-card-body">
+            <table class="detail-table">
+              <tr><td>Upstream pressure head<span class="expl">Pressure at lateral inlet</span></td><td id="m-hup-out">—</td></tr>
+              <tr><td>Downstream pressure head<span class="expl">H_up − h_l (adjusted loss)</span></td><td id="m-hdown-out">—</td></tr>
+              <tr><td>Flow per outlet<span class="expl">Q_total / N — equal discharge assumed</span></td><td id="m-qoutlet">—</td></tr>
+              <tr><td>Outlet spacing<span class="expl">s = L / N</span></td><td id="m-spacing">—</td></tr>
+              <tr><td>Relative roughness ε/D</td><td id="m-rrel">—</td></tr>
+              <tr><td>Friction reduction vs. single pipe<span class="expl">= (1 − F) × 100%</span></td><td id="m-reduction">—</td></tr>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /results-main -->
+    </div><!-- /results-col -->
+  </div><!-- /calc-grid -->
+
+</div><!-- /page-inner -->
+</div><!-- /page-multi -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 3 — REFERENCE TABLES
+════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-lookup">
+<div class="page-inner">
+
+  <div class="lookup-intro">
+    Click <strong>Use value</strong> on any row to instantly populate the roughness or viscosity fields in both calculator tabs.
+    Values are automatically converted to match your selected unit system (SI or Imperial).
+  </div>
+
+  <div class="lookup-grid">
+
+    <!-- Roughness table -->
+    <div class="lookup-card">
+      <div class="lookup-card-header">
+        <div class="lch-icon lch-icon-blue">⬡</div>
+        <div>
+          <h3>Pipe roughness ε</h3>
+          <p id="rough-unit-label">Absolute roughness by pipe material and condition.<br>Lower ε → smoother pipe → lower friction.</p>
+        </div>
+      </div>
+      <div class="lookup-search">
+        <input type="text" id="rough-search" placeholder="Filter by material or condition…" oninput="filterRoughness()"/>
+      </div>
+      <div class="lookup-table-wrap">
+        <table class="lookup-table">
+          <thead>
+            <tr>
+              <th>Material &amp; Condition</th>
+              <th id="th-rough-val">ε (m)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rough-tbody"></tbody>
+        </table>
+      </div>
+      <div class="lookup-note">* Mid-range value used when a range is given</div>
+    </div>
+
+    <!-- Viscosity table -->
+    <div class="lookup-card">
+      <div class="lookup-card-header">
+        <div class="lch-icon lch-icon-green">💧</div>
+        <div>
+          <h3>Water properties vs temperature</h3>
+          <p id="visc-unit-label">Dynamic viscosity μ and density ρ for fresh water.<br>Higher temperature → lower viscosity.</p>
+        </div>
+      </div>
+      <div class="lookup-search">
+        <input type="text" id="visc-search" placeholder="Filter by temperature…" oninput="filterViscosity()"/>
+      </div>
+      <div class="lookup-table-wrap">
+        <table class="lookup-table">
+          <thead>
+            <tr>
+              <th id="th-temp">Temp (°C)</th>
+              <th id="th-mu">μ (Pa·s)</th>
+              <th id="th-rho">ρ (kg/m³)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="visc-tbody"></tbody>
+        </table>
+      </div>
+      <div class="lookup-note" id="visc-note">* Both ρ and μ are applied to both calculator tabs when clicked</div>
+    </div>
+
+  </div>
+</div><!-- /page-inner -->
+</div><!-- /page-lookup -->
+
+
 <footer>
-  Darcy-Weisbach Friction Loss Calculator &nbsp;·&nbsp;
-  Colebrook-White friction factor &nbsp;·&nbsp;
-  Christiansen multi-outlet adjustment &nbsp;·&nbsp;
+  Head-losses Calculator &nbsp;·&nbsp; Darcy-Weisbach equation &nbsp;·&nbsp; Colebrook-White friction factor &nbsp;·&nbsp;
+  Christiansen (1942) multi-outlet method &nbsp;·&nbsp;
   <a href="https://en.wikipedia.org/wiki/Darcy%E2%80%93Weisbach_equation" target="_blank">Wikipedia reference</a>
 </footer>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // UNIT SYSTEM
-// ═══════════════════════════════════════════════════════════════
-let currentUnits = 'SI'; // 'SI' or 'IMP'
-
-// Conversion factors: imperial → SI
+// ══════════════════════════════════════════════════
+let currentUnits = 'SI';
 const C = {
-  in_to_m:    0.0254,
-  ft_to_m:    0.3048,
-  ft3s_to_m3s: 0.028316846,
-  gpm_to_m3s:  6.30902e-5,
+  in_to_m: 0.0254,
+  ft_to_m: 0.3048,
+  gpm_to_m3s: 6.30902e-5,
   slug_ft3_to_kg_m3: 515.378819,
-  lbfts_to_Pas: 47.8803,  // lb·s/ft² → Pa·s  (dynamic viscosity)
-  ft_to_m:    0.3048,
+  lbfts_to_Pas: 47.8803,
 };
-
-// Labels for each field per unit system
 const LABELS = {
-  SI: {
-    diam:  'Pipe diameter D (m)',
-    len:   'Pipe length L (m)',
-    rough: 'Roughness ε (m)',
-    flow:  'Flow rate Q (m³/h)',
-    rho:   'Density ρ (kg/m³)',
-    mu:    'Viscosity μ (Pa·s)',
-    hup:   'Upstream head (m)',
-    mlen:  'Total pipe length L (m)',
-    mflow: 'Total flow rate Q (m³/h)',
-    indicator: 'm · kg · Pa·s',
-  },
-  IMP: {
-    diam:  'Pipe diameter D (in)',
-    len:   'Pipe length L (ft)',
-    rough: 'Roughness ε (ft)',
-    flow:  'Flow rate Q (gpm)',
-    rho:   'Density ρ (slug/ft³)',
-    mu:    'Viscosity μ (lb·s/ft²)',
-    hup:   'Upstream head (ft)',
-    mlen:  'Total pipe length L (ft)',
-    mflow: 'Total flow rate Q (gpm)',
-    indicator: 'in · ft · lb·s/ft²',
-  }
+  SI:  { diam:'Diameter (m)', len:'Length (m)', rough:'Roughness (m)', flow:'Flow rate (m³/h)', rho:'Density (kg/m³)', mu:'Viscosity (Pa·s)', hup:'Upstream head (m)', mlen:'Total length (m)', mflow:'Total flow rate (m³/h)' },
+  IMP: { diam:'Diameter (in)', len:'Length (ft)', rough:'Roughness (ft)', flow:'Flow rate (gpm)', rho:'Density (slug/ft³)', mu:'Viscosity (lb·s/ft²)', hup:'Upstream head (ft)', mlen:'Total length (ft)', mflow:'Total flow rate (gpm)' }
 };
-
-// Default values per system
 const DEFAULTS = {
-  SI: {
-    's-diam': 0.025, 's-len': 50, 's-rough': 0.0000013, 's-flow': 2.5,
-    's-rho': 1000, 's-mu': 0.001002, 's-hup': 20,
-    'm-diam': 0.025, 'm-len': 50, 'm-rough': 0.0000013, 'm-flow': 2.5,
-    'm-rho': 1000, 'm-mu': 0.001002, 'm-hup': 20,
-  },
-  IMP: {
-    // D=0.025m→0.984in, L=50m→164.04ft, ε=1.3e-6m→4.27e-6ft,
-    // Q=2.5m3/h→11.0gpm, rho=1000kg/m3→1.940slug/ft3,
-    // mu=0.001002Pa·s→2.094e-5lb·s/ft2, H=20m→65.62ft
-    's-diam': 0.984, 's-len': 164.0, 's-rough': 4.27e-6, 's-flow': 11.01,
-    's-rho': 1.940, 's-mu': 2.094e-5, 's-hup': 65.62,
-    'm-diam': 0.984, 'm-len': 164.0, 'm-rough': 4.27e-6, 'm-flow': 11.01,
-    'm-rho': 1.940, 'm-mu': 2.094e-5, 'm-hup': 65.62,
-  }
+  SI:  { 's-diam':0.025,'s-len':50,'s-rough':0.0000013,'s-flow':2.5,'s-rho':1000,'s-mu':0.001002,'s-hup':20,'m-diam':0.025,'m-len':50,'m-rough':0.0000013,'m-flow':2.5,'m-rho':1000,'m-mu':0.001002,'m-hup':20 },
+  IMP: { 's-diam':0.984,'s-len':164.0,'s-rough':4.27e-6,'s-flow':11.01,'s-rho':1.940,'s-mu':2.094e-5,'s-hup':65.62,'m-diam':0.984,'m-len':164.0,'m-rough':4.27e-6,'m-flow':11.01,'m-rho':1.940,'m-mu':2.094e-5,'m-hup':65.62 }
 };
 
 function setUnits(sys) {
   currentUnits = sys;
-  document.getElementById('btn-si').classList.toggle('active', sys === 'SI');
-  document.getElementById('btn-imp').classList.toggle('active', sys === 'IMP');
-  document.getElementById('unit-indicator').textContent = LABELS[sys].indicator;
-
-  const L = LABELS[sys];
-  const D = DEFAULTS[sys];
-  const isImp = sys === 'IMP';
-
-  // Single outlet labels + defaults
-  document.getElementById('lbl-s-diam').textContent  = L.diam;
-  document.getElementById('lbl-s-len').textContent   = L.len;
-  document.getElementById('lbl-s-rough').textContent = L.rough;
-  document.getElementById('lbl-s-flow').textContent  = L.flow;
-  document.getElementById('lbl-s-rho').textContent   = L.rho;
-  document.getElementById('lbl-s-mu').textContent    = L.mu;
-  document.getElementById('lbl-s-hup').textContent   = L.hup;
-
-  // Multi pipe labels + defaults
-  document.getElementById('lbl-m-diam').textContent  = L.diam;
-  document.getElementById('lbl-m-len').textContent   = L.mlen;
-  document.getElementById('lbl-m-rough').textContent = L.rough;
-  document.getElementById('lbl-m-flow').textContent  = L.mflow;
-  document.getElementById('lbl-m-rho').textContent   = L.rho;
-  document.getElementById('lbl-m-mu').textContent    = L.mu;
-  document.getElementById('lbl-m-hup').textContent   = L.hup;
-
-  // Set defaults
-  Object.entries(D).forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val;
-  });
-
-  // Banners
-  document.getElementById('s-conv-banner').style.display = isImp ? 'flex' : 'none';
-  document.getElementById('m-conv-banner').style.display = isImp ? 'flex' : 'none';
-
-  // Clear results
+  document.getElementById('btn-si').classList.toggle('active', sys==='SI');
+  document.getElementById('btn-imp').classList.toggle('active', sys==='IMP');
+  const L = LABELS[sys], D = DEFAULTS[sys], isImp = sys==='IMP';
+  const map = {
+    'lbl-s-diam':'diam','lbl-s-len':'len','lbl-s-rough':'rough','lbl-s-flow':'flow','lbl-s-rho':'rho','lbl-s-mu':'mu','lbl-s-hup':'hup',
+    'lbl-m-diam':'diam','lbl-m-len':'mlen','lbl-m-rough':'rough','lbl-m-flow':'mflow','lbl-m-rho':'rho','lbl-m-mu':'mu','lbl-m-hup':'hup'
+  };
+  Object.entries(map).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.textContent=L[key]; });
+  Object.entries(D).forEach(([id,val])   => { const el=document.getElementById(id); if(el) el.value=val; });
+  document.getElementById('s-conv-banner').classList.toggle('show', isImp);
+  document.getElementById('m-conv-banner').classList.toggle('show', isImp);
   ['s-results','m-results'].forEach(id => document.getElementById(id).classList.remove('show'));
-
-  // Update result unit labels
-  const vUnit = isImp ? 'ft/s' : 'm/s';
-  const hUnit = isImp ? 'ft (head)' : 'm (head)';
-  const hfUnit = isImp ? 'ft (no outlets)' : 'm (no outlets)';
-  const hlUnit = isImp ? 'ft (with outlets)' : 'm (with outlets)';
-  document.getElementById('u-s-vel').textContent  = vUnit;
-  document.getElementById('u-s-hf').textContent   = hUnit;
-  document.getElementById('u-m-vel').textContent  = vUnit;
-  document.getElementById('u-m-hfs').textContent  = hfUnit;
-  document.getElementById('u-m-hl').textContent   = hlUnit;
-
-  // Refresh lookup tables
-  renderRoughness(document.getElementById('rough-search').value);
-  renderViscosity(document.getElementById('visc-search').value);
-  updateLookupHeaders();
+  ['s-placeholder','m-placeholder'].forEach(id => document.getElementById(id).style.display='');
+  document.getElementById('u-s-vel').textContent = isImp?'ft/s':'m/s';
+  document.getElementById('u-s-hf').textContent  = isImp?'ft (head)':'m (water column)';
+  document.getElementById('u-m-vel').textContent = isImp?'ft/s':'m/s';
+  document.getElementById('u-m-hfs').textContent = isImp?'ft (full flow)':'m (full flow)';
+  document.getElementById('u-m-hl').textContent  = isImp?'ft = F × hf':'m = F × hf';
+  renderRoughness(); renderViscosity(); updateLookupHeaders();
 }
 
 function updateLookupHeaders() {
-  const isImp = currentUnits === 'IMP';
-  document.getElementById('th-rough-val').textContent = isImp ? 'ε (ft)' : 'ε (m)';
-  document.getElementById('th-temp').textContent      = isImp ? 'Temp (°F)' : 'Temp (°C)';
-  document.getElementById('th-mu').textContent        = isImp ? 'μ (lb·s/ft²)' : 'μ (Pa·s)';
-  document.getElementById('th-rho').textContent       = isImp ? 'ρ (slug/ft³)' : 'ρ (kg/m³)';
-  document.getElementById('rough-unit-label').textContent = isImp
-    ? 'Absolute roughness by material (imperial)'
-    : 'Absolute roughness by material';
+  const isImp = currentUnits==='IMP';
+  document.getElementById('th-rough-val').textContent = isImp?'ε (ft)':'ε (m)';
+  document.getElementById('th-temp').textContent      = isImp?'Temp (°F)':'Temp (°C)';
+  document.getElementById('th-mu').textContent        = isImp?'μ (lb·s/ft²)':'μ (Pa·s)';
+  document.getElementById('th-rho').textContent       = isImp?'ρ (slug/ft³)':'ρ (kg/m³)';
+  document.getElementById('rough-unit-label').innerHTML = isImp
+    ? 'Absolute roughness by pipe material (imperial).<br>Lower ε → smoother pipe → lower friction.'
+    : 'Absolute roughness by pipe material and condition.<br>Lower ε → smoother pipe → lower friction.';
   document.getElementById('visc-note').textContent = isImp
-    ? '* ρ and μ in imperial units applied to both panels'
-    : '* ρ and μ values applied to both calculator panels';
+    ? '* ρ and μ converted to imperial and applied to both tabs'
+    : '* Both ρ and μ are applied to both calculator tabs when clicked';
 }
 
-// ═══════════════════════════════════════════════════════════════
-// CONVERT INPUTS TO SI FOR CALCULATION
-// ═══════════════════════════════════════════════════════════════
-function toSI(val, type) {
-  if (currentUnits === 'SI') return val;
-  switch (type) {
-    case 'diam':  return val * C.in_to_m;              // inches → m
-    case 'len':   return val * C.ft_to_m;              // ft → m
-    case 'rough': return val * C.ft_to_m;              // ft → m
-    case 'flow':  return val * C.gpm_to_m3s * 3600;   // gpm → m³/h (keep in m3/h, div by 3600 later)
-    case 'rho':   return val * C.slug_ft3_to_kg_m3;   // slug/ft³ → kg/m³
-    case 'mu':    return val * C.lbfts_to_Pas;         // lb·s/ft² → Pa·s
-    case 'head':  return val * C.ft_to_m;              // ft → m
-    default:      return val;
-  }
-}
-
-// Convert SI result back to display units
 function fromSI(val, type) {
-  if (currentUnits === 'SI') return val;
-  switch (type) {
-    case 'vel':   return val / C.ft_to_m;              // m/s → ft/s
-    case 'head':  return val / C.ft_to_m;              // m → ft
-    case 'area':  return val / (C.ft_to_m * C.ft_to_m); // m² → ft²
-    case 'flow':  return val / C.gpm_to_m3s;           // m³/s → gpm
-    case 'len':   return val / C.ft_to_m;              // m → ft
-    case 'nu':    return val / (C.ft_to_m * C.ft_to_m); // m²/s → ft²/s
-    default:      return val;
+  if (currentUnits==='SI') return val;
+  switch(type) {
+    case 'vel':  return val/C.ft_to_m;
+    case 'head': return val/C.ft_to_m;
+    case 'area': return val/(C.in_to_m*C.in_to_m);
+    case 'flow': return val/C.gpm_to_m3s;
+    case 'len':  return val/C.ft_to_m;
+    case 'nu':   return val/(C.ft_to_m*C.ft_to_m);
+    default: return val;
   }
 }
 
-const uSym = {
-  vel:  () => currentUnits === 'SI' ? 'm/s'    : 'ft/s',
-  head: () => currentUnits === 'SI' ? 'm'      : 'ft',
-  area: () => currentUnits === 'SI' ? 'cm²'    : 'in²',
-  flow: () => currentUnits === 'SI' ? 'm³/h'   : 'gpm',
-  len:  () => currentUnits === 'SI' ? 'm'      : 'ft',
-  nu:   () => currentUnits === 'SI' ? '×10⁻⁶ m²/s' : '×10⁻⁵ ft²/s',
-};
-
-// ═══════════════════════════════════════════════════════════════
-// REFERENCE DATA (always stored in SI / metric)
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// REFERENCE DATA (SI internally)
+// ══════════════════════════════════════════════════
 const roughnessData = [
-  { material: "Aluminium, drawn/pressed", condition: "New",                   eps_mm: 0.0014  },
-  { material: "Aluminium, drawn/pressed", condition: "Used",                  eps_mm: 0.015   },
-  { material: "Asbestos-cement",          condition: "New, smooth",           eps_mm: 0.065   },
-  { material: "Brass, drawn/pressed",     condition: "New",                   eps_mm: 0.00135 },
-  { material: "Brass, drawn/pressed",     condition: "Used",                  eps_mm: 0.015   },
-  { material: "Cast iron",                condition: "Average city sewerage", eps_mm: 1.2     },
-  { material: "Cast iron",                condition: "Incrusted",             eps_mm: 1.5     },
-  { material: "Cast iron",                condition: "New, bituminized",      eps_mm: 0.115   },
-  { material: "Cast iron",                condition: "New, with skin",        eps_mm: 0.40    },
-  { material: "Cast iron",                condition: "Slightly rusty",        eps_mm: 1.25    },
-  { material: "Cast iron",                condition: "Heavily incrusted",     eps_mm: 2.25    },
-  { material: "Clay tile",                condition: "New",                   eps_mm: 9.0     },
-  { material: "Clay, drainage pipe",      condition: "New, calcined",         eps_mm: 0.70    },
-  { material: "Concrete",                 condition: "New, smooth",           eps_mm: 0.55    },
-  { material: "Concrete",                 condition: "New, medium rough",     eps_mm: 1.5     },
-  { material: "Concrete",                 condition: "New, rough",            eps_mm: 2.5     },
-  { material: "Concrete",                 condition: "Several years service", eps_mm: 0.25    },
-  { material: "Concrete, centrifugal",    condition: "New, smooth plastered", eps_mm: 0.125   },
-  { material: "Concrete, centrifugal",    condition: "New, without plaster",  eps_mm: 0.50    },
-  { material: "Copper, drawn/pressed",    condition: "New",                   eps_mm: 0.0014  },
-  { material: "Copper, drawn/pressed",    condition: "Used",                  eps_mm: 0.015   },
-  { material: "Glass, drawn/pressed",     condition: "New",                   eps_mm: 0.0014  },
-  { material: "Glass, drawn/pressed",     condition: "Used",                  eps_mm: 0.015   },
-  { material: "Plastic (PVC/HDPE)",       condition: "New",                   eps_mm: 0.0014  },
-  { material: "Plastic (PVC/HDPE)",       condition: "Used",                  eps_mm: 0.015   },
-  { material: "Rubber",                   condition: "New, smooth",           eps_mm: 0.0016  },
-  { material: "Steel, weldless",          condition: "New, pickled",          eps_mm: 0.035   },
-  { material: "Steel, weldless",          condition: "New, rolling skin",     eps_mm: 0.04    },
-  { material: "Steel, weldless",          condition: "New, galvanized neat",  eps_mm: 0.085   },
-  { material: "Steel, weldless",          condition: "New, galvanized comm.", eps_mm: 0.13    },
-  { material: "Steel, weldless",          condition: "Slightly rusty",        eps_mm: 0.275   },
-  { material: "Steel, weldless",          condition: "Intensely incrusted",   eps_mm: 3.0     },
-  { material: "Steel, long. welded",      condition: "New, rolling skin",     eps_mm: 0.07    },
-  { material: "Steel, long. welded",      condition: "New, galvanized",       eps_mm: 0.008   },
-  { material: "Steel, long. welded",      condition: "New, bituminized",      eps_mm: 0.03    },
-  { material: "Steel, after cleaning",    condition: "Long operation cleaned",eps_mm: 0.175   },
-  { material: "Steel, homog. corrosion",  condition: "Corrosion pits",        eps_mm: 0.15    },
-  { material: "Stoneware",               condition: "—",                      eps_mm: 0.25    },
+  { material:"Aluminium, drawn/pressed", condition:"New",                   eps_mm:0.0014  },
+  { material:"Aluminium, drawn/pressed", condition:"Used",                  eps_mm:0.015   },
+  { material:"Asbestos-cement",          condition:"New, smooth",           eps_mm:0.065   },
+  { material:"Brass, drawn/pressed",     condition:"New",                   eps_mm:0.00135 },
+  { material:"Brass, drawn/pressed",     condition:"Used",                  eps_mm:0.015   },
+  { material:"Cast iron",                condition:"New, bituminized",      eps_mm:0.115   },
+  { material:"Cast iron",                condition:"New, with skin",        eps_mm:0.40    },
+  { material:"Cast iron",                condition:"Slightly rusty",        eps_mm:1.25    },
+  { material:"Cast iron",                condition:"Heavily incrusted",     eps_mm:2.25    },
+  { material:"Cast iron",                condition:"Incrusted",             eps_mm:1.5     },
+  { material:"Cast iron",                condition:"Average city sewerage", eps_mm:1.2     },
+  { material:"Clay tile",                condition:"New",                   eps_mm:9.0     },
+  { material:"Clay, drainage pipe",      condition:"New, calcined",         eps_mm:0.70    },
+  { material:"Concrete",                 condition:"New, smooth",           eps_mm:0.55    },
+  { material:"Concrete",                 condition:"New, medium rough",     eps_mm:1.5     },
+  { material:"Concrete",                 condition:"New, rough",            eps_mm:2.5     },
+  { material:"Concrete",                 condition:"Several years service", eps_mm:0.25    },
+  { material:"Concrete, centrifugal",    condition:"New, smooth plastered", eps_mm:0.125   },
+  { material:"Concrete, centrifugal",    condition:"New, without plaster",  eps_mm:0.50    },
+  { material:"Copper, drawn/pressed",    condition:"New",                   eps_mm:0.0014  },
+  { material:"Copper, drawn/pressed",    condition:"Used",                  eps_mm:0.015   },
+  { material:"Glass",                    condition:"New",                   eps_mm:0.0014  },
+  { material:"Glass",                    condition:"Used",                  eps_mm:0.015   },
+  { material:"Plastic (PVC/HDPE)",       condition:"New",                   eps_mm:0.0014  },
+  { material:"Plastic (PVC/HDPE)",       condition:"Used",                  eps_mm:0.015   },
+  { material:"Rubber",                   condition:"New, smooth",           eps_mm:0.0016  },
+  { material:"Steel, weldless",          condition:"New, pickled",          eps_mm:0.035   },
+  { material:"Steel, weldless",          condition:"New, rolling skin",     eps_mm:0.04    },
+  { material:"Steel, weldless",          condition:"New, galvanized neat",  eps_mm:0.085   },
+  { material:"Steel, weldless",          condition:"New, galvanized comm.", eps_mm:0.13    },
+  { material:"Steel, weldless",          condition:"Slightly rusty",        eps_mm:0.275   },
+  { material:"Steel, weldless",          condition:"Intensely incrusted",   eps_mm:3.0     },
+  { material:"Steel, long. welded",      condition:"New, rolling skin",     eps_mm:0.07    },
+  { material:"Steel, long. welded",      condition:"New, galvanized",       eps_mm:0.008   },
+  { material:"Steel, long. welded",      condition:"New, bituminized",      eps_mm:0.03    },
+  { material:"Steel, after cleaning",    condition:"Long operation",        eps_mm:0.175   },
+  { material:"Steel, homog. corrosion",  condition:"Corrosion pits",        eps_mm:0.15    },
+  { material:"Stoneware",                condition:"—",                     eps_mm:0.25    },
 ];
 
 const viscosityData = [
-  { temp_c: 0,   mu: 0.001787, rho: 999.8 },
-  { temp_c: 5,   mu: 0.001519, rho: 999.9 },
-  { temp_c: 10,  mu: 0.001307, rho: 999.7 },
-  { temp_c: 15,  mu: 0.001139, rho: 999.1 },
-  { temp_c: 20,  mu: 0.001002, rho: 998.2 },
-  { temp_c: 25,  mu: 0.000890, rho: 997.0 },
-  { temp_c: 30,  mu: 0.000798, rho: 995.6 },
-  { temp_c: 35,  mu: 0.000719, rho: 994.0 },
-  { temp_c: 40,  mu: 0.000653, rho: 992.2 },
-  { temp_c: 45,  mu: 0.000596, rho: 990.2 },
-  { temp_c: 50,  mu: 0.000547, rho: 988.0 },
-  { temp_c: 55,  mu: 0.000504, rho: 985.7 },
-  { temp_c: 60,  mu: 0.000467, rho: 983.2 },
-  { temp_c: 65,  mu: 0.000434, rho: 980.5 },
-  { temp_c: 70,  mu: 0.000404, rho: 977.7 },
-  { temp_c: 75,  mu: 0.000378, rho: 974.8 },
-  { temp_c: 80,  mu: 0.000355, rho: 971.8 },
-  { temp_c: 85,  mu: 0.000334, rho: 968.6 },
-  { temp_c: 90,  mu: 0.000315, rho: 965.3 },
-  { temp_c: 95,  mu: 0.000298, rho: 961.9 },
-  { temp_c: 100, mu: 0.000282, rho: 958.3 },
+  { temp_c:0,   mu:0.001787, rho:999.8 },
+  { temp_c:5,   mu:0.001519, rho:999.9 },
+  { temp_c:10,  mu:0.001307, rho:999.7 },
+  { temp_c:15,  mu:0.001139, rho:999.1 },
+  { temp_c:20,  mu:0.001002, rho:998.2 },
+  { temp_c:25,  mu:0.000890, rho:997.0 },
+  { temp_c:30,  mu:0.000798, rho:995.6 },
+  { temp_c:35,  mu:0.000719, rho:994.0 },
+  { temp_c:40,  mu:0.000653, rho:992.2 },
+  { temp_c:45,  mu:0.000596, rho:990.2 },
+  { temp_c:50,  mu:0.000547, rho:988.0 },
+  { temp_c:55,  mu:0.000504, rho:985.7 },
+  { temp_c:60,  mu:0.000467, rho:983.2 },
+  { temp_c:65,  mu:0.000434, rho:980.5 },
+  { temp_c:70,  mu:0.000404, rho:977.7 },
+  { temp_c:75,  mu:0.000378, rho:974.8 },
+  { temp_c:80,  mu:0.000355, rho:971.8 },
+  { temp_c:85,  mu:0.000334, rho:968.6 },
+  { temp_c:90,  mu:0.000315, rho:965.3 },
+  { temp_c:95,  mu:0.000298, rho:961.9 },
+  { temp_c:100, mu:0.000282, rho:958.3 },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// RENDER LOOKUP TABLES
-// ═══════════════════════════════════════════════════════════════
-function renderRoughness(filter = '') {
-  const tbody = document.getElementById('rough-tbody');
-  const f = filter.toLowerCase();
-  const isImp = currentUnits === 'IMP';
-  const rows = roughnessData.filter(r =>
-    r.material.toLowerCase().includes(f) || r.condition.toLowerCase().includes(f)
-  );
-  tbody.innerHTML = rows.map(r => {
-    const eps_si = r.eps_mm / 1000;  // metres
-    const dispVal = isImp
-      ? (eps_si / C.ft_to_m).toExponential(3) + ' ft'
-      : eps_si.toExponential(3) + ' m';
+// ══════════════════════════════════════════════════
+// RENDER TABLES
+// ══════════════════════════════════════════════════
+function renderRoughness(filter='') {
+  const tbody=document.getElementById('rough-tbody');
+  const f=filter.toLowerCase(), isImp=currentUnits==='IMP';
+  const rows=roughnessData.filter(r=>r.material.toLowerCase().includes(f)||r.condition.toLowerCase().includes(f));
+  tbody.innerHTML=rows.map(r=>{
+    const eps_si=r.eps_mm/1000;
+    const disp=isImp?(eps_si/C.ft_to_m).toExponential(3)+' ft':eps_si.toExponential(3)+' m';
     return `<tr>
-      <td><div class="mat-name">${r.material}</div></td>
-      <td><div class="mat-desc">${r.condition}</div></td>
-      <td class="rough-val">${dispVal}</td>
+      <td><div class="mat-name">${r.material}</div><div class="mat-cond">${r.condition}</div></td>
+      <td class="rough-val">${disp}</td>
       <td><button class="use-btn" onclick="applyRoughness(${eps_si})">Use value</button></td>
     </tr>`;
   }).join('');
 }
 
-function renderViscosity(filter = '') {
-  const tbody = document.getElementById('visc-tbody');
-  const f = filter.trim();
-  const isImp = currentUnits === 'IMP';
-  const rows = viscosityData.filter(r => {
-    if (f === '') return true;
-    const tempDisp = isImp ? String(Math.round(r.temp_c * 9/5 + 32)) : String(r.temp_c);
-    return tempDisp.includes(f) || String(r.temp_c).includes(f);
+function renderViscosity(filter='') {
+  const tbody=document.getElementById('visc-tbody');
+  const f=filter.trim(), isImp=currentUnits==='IMP';
+  const rows=viscosityData.filter(r=>{
+    if(!f) return true;
+    const td=isImp?String(Math.round(r.temp_c*9/5+32)):String(r.temp_c);
+    return td.includes(f)||String(r.temp_c).includes(f);
   });
-  tbody.innerHTML = rows.map(r => {
-    const tempDisp = isImp
-      ? (r.temp_c * 9/5 + 32).toFixed(1) + ' °F'
-      : r.temp_c + ' °C';
-    const muDisp = isImp
-      ? (r.mu / C.lbfts_to_Pas).toExponential(3)
-      : r.mu.toFixed(6);
-    const rhoDisp = isImp
-      ? (r.rho / C.slug_ft3_to_kg_m3).toFixed(4)
-      : r.rho.toFixed(1);
+  tbody.innerHTML=rows.map(r=>{
+    const tDisp =isImp?(r.temp_c*9/5+32).toFixed(1)+' °F':r.temp_c+' °C';
+    const muDisp=isImp?(r.mu/C.lbfts_to_Pas).toExponential(3):r.mu.toFixed(6);
+    const rhoDisp=isImp?(r.rho/C.slug_ft3_to_kg_m3).toFixed(4):r.rho.toFixed(1);
     return `<tr>
-      <td class="temp-val">${tempDisp}</td>
+      <td class="temp-val">${tDisp}</td>
       <td class="visc-val">${muDisp}</td>
       <td class="visc-val">${rhoDisp}</td>
-      <td><button class="use-btn" onclick="applyViscosity(${r.mu}, ${r.rho})">Use value</button></td>
+      <td><button class="use-btn" onclick="applyViscosity(${r.mu},${r.rho})">Use value</button></td>
     </tr>`;
   }).join('');
 }
 
 function filterRoughness() { renderRoughness(document.getElementById('rough-search').value); }
-function filterViscosity() { renderViscosity(document.getElementById('visc-search').value); }
+function filterViscosity()  { renderViscosity(document.getElementById('visc-search').value); }
 
-// Apply roughness: eps is always stored in SI (metres)
 function applyRoughness(eps_si) {
-  const isImp = currentUnits === 'IMP';
-  const applyVal = isImp ? eps_si / C.ft_to_m : eps_si;
-  const dispStr  = isImp
-    ? applyVal.toExponential(3) + ' ft'
-    : eps_si.toExponential(3) + ' m';
-  ['s-rough','m-rough'].forEach(id => { document.getElementById(id).value = applyVal; });
-  showToast('ε = ' + dispStr + ' applied to both panels');
+  const isImp=currentUnits==='IMP', v=isImp?eps_si/C.ft_to_m:eps_si;
+  ['s-rough','m-rough'].forEach(id=>{ document.getElementById(id).value=v; });
+  showToast('ε = '+(isImp?(v.toExponential(3)+' ft'):(eps_si.toExponential(3)+' m'))+' applied');
 }
 
-// Apply viscosity: mu/rho are always SI; convert if imperial active
 function applyViscosity(mu_si, rho_si) {
-  const isImp = currentUnits === 'IMP';
-  const applyMu  = isImp ? mu_si / C.lbfts_to_Pas : mu_si;
-  const applyRho = isImp ? rho_si / C.slug_ft3_to_kg_m3 : rho_si;
-  ['s-mu','m-mu'].forEach(id => { document.getElementById(id).value = applyMu; });
-  ['s-rho','m-rho'].forEach(id => { document.getElementById(id).value = applyRho; });
-  const muStr  = isImp ? applyMu.toExponential(3) + ' lb·s/ft²' : mu_si.toFixed(6) + ' Pa·s';
-  const rhoStr = isImp ? applyRho.toFixed(4) + ' slug/ft³' : rho_si.toFixed(1) + ' kg/m³';
-  showToast('μ = ' + muStr + '  ρ = ' + rhoStr + ' applied');
+  const isImp=currentUnits==='IMP';
+  const mu =isImp?mu_si/C.lbfts_to_Pas:mu_si;
+  const rho=isImp?rho_si/C.slug_ft3_to_kg_m3:rho_si;
+  ['s-mu','m-mu'].forEach(id=>document.getElementById(id).value=mu);
+  ['s-rho','m-rho'].forEach(id=>document.getElementById(id).value=rho);
+  showToast('μ and ρ applied to both calculator tabs');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// HYDRAULICS CORE (always SI internally)
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// HYDRAULICS CORE
+// ══════════════════════════════════════════════════
 function colebrookWhite(Re, epsD, tol=1e-10, maxIter=200) {
-  if (Re < 2300) return 64 / Re;
-  let f = 0.25 / Math.pow(Math.log10(epsD / 3.7 + 5.74 / Math.pow(Re, 0.9)), 2);
-  for (let i = 0; i < maxIter; i++) {
-    const rhs = -2.0 * Math.log10(epsD / 3.7 + 2.51 / (Re * Math.sqrt(f)));
-    const fNew = 1.0 / (rhs * rhs);
-    if (Math.abs(fNew - f) < tol) return fNew;
-    f = fNew;
+  if (Re < 2300) return 64/Re;
+  let f=0.25/Math.pow(Math.log10(epsD/3.7+5.74/Math.pow(Re,0.9)),2);
+  for (let i=0; i<maxIter; i++) {
+    const rhs=-2.0*Math.log10(epsD/3.7+2.51/(Re*Math.sqrt(f)));
+    const fN=1/(rhs*rhs);
+    if (Math.abs(fN-f)<tol) return fN;
+    f=fN;
   }
   return f;
 }
 
 function christiansenF(N, firstAtInlet) {
-  const m = 1.852;
-  let sum = 0;
-  for (let k = 1; k <= N; k++) {
-    const xk = firstAtInlet ? (k / N) : ((k - 0.5) / N);
-    if (xk <= 0) continue;
-    sum += Math.pow(xk, m);
+  const m=1.852; let sum=0;
+  for (let k=1; k<=N; k++) {
+    const xk=firstAtInlet?k/N:(k-0.5)/N;
+    if (xk>0) sum+=Math.pow(xk,m);
   }
-  return sum / N;
+  return sum/N;
 }
 
-function regime(Re) {
-  if (Re < 2300) return ['Laminar', 'laminar'];
-  if (Re < 4000) return ['Transitional', 'transitional'];
-  return ['Turbulent', 'turbulent'];
+function regimeInfo(Re) {
+  if (Re<2300) return { name:'Laminar',     cls:'rp-laminar',      desc:'<strong>Laminar flow</strong> — Re &lt; 2,300. Fluid moves in smooth parallel layers. Friction factor depends only on Reynolds number: f = 64/Re.' };
+  if (Re<4000) return { name:'Transitional',cls:'rp-transitional', desc:'<strong>Transitional flow</strong> — Re 2,300–4,000. Flow alternates between laminar and turbulent. Colebrook-White is less reliable in this zone.' };
+  return          { name:'Turbulent',     cls:'rp-turbulent',    desc:'<strong>Turbulent flow</strong> — Re &gt; 4,000. Fluid mixes chaotically. Friction factor depends on Re and wall roughness ε/D. Colebrook-White is solved iteratively.' };
 }
 
-function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.classList.add('show'); }
-function hideErr(id) { document.getElementById(id).classList.remove('show'); }
+function showErr(id,msg){ const e=document.getElementById(id); e.textContent=msg; e.classList.add('show'); }
+function hideErr(id)    { document.getElementById(id).classList.remove('show'); }
 
-// ═══════════════════════════════════════════════════════════════
-// SINGLE PIPE
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// SINGLE OUTLET CALC
+// ══════════════════════════════════════════════════
 function calcSingle() {
   hideErr('s-error');
-  const isImp = currentUnits === 'IMP';
+  const isImp=currentUnits==='IMP';
+  const rawD  =parseFloat(document.getElementById('s-diam').value);
+  const rawL  =parseFloat(document.getElementById('s-len').value);
+  const rawEps=parseFloat(document.getElementById('s-rough').value);
+  const rawQ  =parseFloat(document.getElementById('s-flow').value);
+  const rawRho=parseFloat(document.getElementById('s-rho').value);
+  const rawMu =parseFloat(document.getElementById('s-mu').value);
+  const rawHup=parseFloat(document.getElementById('s-hup').value);
 
-  const rawD   = parseFloat(document.getElementById('s-diam').value);
-  const rawL   = parseFloat(document.getElementById('s-len').value);
-  const rawEps = parseFloat(document.getElementById('s-rough').value);
-  const rawQ   = parseFloat(document.getElementById('s-flow').value);
-  const rawRho = parseFloat(document.getElementById('s-rho').value);
-  const rawMu  = parseFloat(document.getElementById('s-mu').value);
-  const rawHup = parseFloat(document.getElementById('s-hup').value);
-
-  if ([rawD,rawL,rawEps,rawQ,rawRho,rawMu].some(isNaN) ||
-      rawD<=0 || rawL<=0 || rawQ<=0 || rawRho<=0 || rawMu<=0) {
-    showErr('s-error', 'Please enter valid positive values for all fields.'); return;
+  if ([rawD,rawL,rawEps,rawQ,rawRho,rawMu].some(isNaN)||rawD<=0||rawL<=0||rawQ<=0||rawRho<=0||rawMu<=0) {
+    showErr('s-error','Please enter valid positive values for all fields.'); return;
   }
 
-  // Convert to SI
-  const D   = isImp ? rawD * C.in_to_m                         : rawD;
-  const L   = isImp ? rawL * C.ft_to_m                         : rawL;
-  const eps = isImp ? rawEps * C.ft_to_m                       : rawEps;
-  const Q   = isImp ? rawQ * C.gpm_to_m3s                      : rawQ / 3600;
-  const rho = isImp ? rawRho * C.slug_ft3_to_kg_m3             : rawRho;
-  const mu  = isImp ? rawMu * C.lbfts_to_Pas                   : rawMu;
-  const Hup = isImp ? rawHup * C.ft_to_m                       : rawHup;
+  const D  =isImp?rawD*C.in_to_m:rawD;
+  const L  =isImp?rawL*C.ft_to_m:rawL;
+  const eps=isImp?rawEps*C.ft_to_m:rawEps;
+  const Q  =isImp?rawQ*C.gpm_to_m3s:rawQ/3600;
+  const rho=isImp?rawRho*C.slug_ft3_to_kg_m3:rawRho;
+  const mu =isImp?rawMu*C.lbfts_to_Pas:rawMu;
+  const Hup=isImp?rawHup*C.ft_to_m:rawHup;
 
-  const A    = Math.PI * D * D / 4;
-  const V    = Q / A;
-  const Re   = rho * V * D / mu;
-  const epsD = eps / D;
-  const f    = colebrookWhite(Re, epsD);
-  const g    = 9.81;
-  const hf   = f * (L / D) * (V * V / (2 * g));
-  const Hdown = Hup - hf;
-  const [regimeName, rc] = regime(Re);
-  const nu   = mu / rho; // kinematic viscosity m²/s
+  const A=Math.PI*D*D/4, V=Q/A, Re=rho*V*D/mu, epsD=eps/D;
+  const f=colebrookWhite(Re,epsD), g=9.81;
+  const hf=f*(L/D)*(V*V/(2*g)), Hdown=Hup-hf, nu=mu/rho;
+  const ri=regimeInfo(Re);
+  const hSym=isImp?'ft':'m', vSym=isImp?'ft/s':'m/s';
 
-  // Display — convert back from SI
-  const dispV     = fromSI(V, 'vel');
-  const dispHf    = fromSI(hf, 'head');
-  const dispHup   = fromSI(Hup, 'head');
-  const dispHdown = fromSI(Hdown, 'head');
-  const dispA     = isImp ? (A / (C.in_to_m * C.in_to_m)).toFixed(4) : (A * 1e4).toFixed(4);
-  const aUnit     = isImp ? 'in²' : 'cm²';
-  const dispNu    = isImp ? (nu / (C.ft_to_m * C.ft_to_m) * 1e5).toFixed(4) : (nu * 1e6).toFixed(4);
-  const nuSuf     = isImp ? ' ×10⁻⁵ ft²/s' : ' ×10⁻⁶ m²/s';
-  const hSym      = isImp ? 'ft' : 'm';
+  document.getElementById('s-vel').textContent    = fromSI(V,'vel').toFixed(4);
+  document.getElementById('s-re').textContent     = Math.round(Re).toLocaleString();
+  document.getElementById('s-regime').innerHTML   = `<div class="regime-pill ${ri.cls}">${ri.name}</div>`;
+  document.getElementById('s-regime-desc').innerHTML = ri.desc;
+  document.getElementById('s-f').textContent      = f.toFixed(6);
+  document.getElementById('s-hf').textContent     = fromSI(hf,'head').toFixed(4);
+  document.getElementById('s-hup-out').textContent    = fromSI(Hup,'head').toFixed(3)+' '+hSym;
+  document.getElementById('s-hdown-out').textContent  = fromSI(Hdown,'head').toFixed(4)+' '+hSym;
+  document.getElementById('s-area').textContent   = isImp?(A/(C.in_to_m*C.in_to_m)).toFixed(4)+' in²':(A*1e4).toFixed(4)+' cm²';
+  document.getElementById('s-rrel').textContent   = epsD.toExponential(4);
+  document.getElementById('s-nu').textContent     = isImp?(nu/(C.ft_to_m*C.ft_to_m)*1e5).toFixed(4)+' ×10⁻⁵ ft²/s':(nu*1e6).toFixed(4)+' ×10⁻⁶ m²/s';
 
-  document.getElementById('s-vel').textContent       = dispV.toFixed(4);
-  document.getElementById('s-re').textContent        = Math.round(Re).toLocaleString();
-  document.getElementById('s-regime').innerHTML      = `<span class="badge badge-${rc}">${regimeName}</span>`;
-  document.getElementById('s-f').textContent         = f.toFixed(6);
-  document.getElementById('s-hf').textContent        = dispHf.toFixed(4);
-  document.getElementById('s-hup-out').textContent   = dispHup.toFixed(3) + ' ' + hSym;
-  document.getElementById('s-hdown-out').textContent = dispHdown.toFixed(4) + ' ' + hSym;
-  document.getElementById('s-area').textContent      = dispA + ' ' + aUnit;
-  document.getElementById('s-rrel').textContent      = epsD.toExponential(4);
-  document.getElementById('s-nu').textContent        = dispNu + nuSuf;
-
+  document.getElementById('s-placeholder').style.display='none';
   document.getElementById('s-results').classList.add('show');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// MULTIPLE OUTLETS
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// MULTIPLE OUTLETS CALC
+// ══════════════════════════════════════════════════
 function calcMulti() {
   hideErr('m-error');
-  const isImp = currentUnits === 'IMP';
+  const isImp=currentUnits==='IMP';
+  const rawD  =parseFloat(document.getElementById('m-diam').value);
+  const rawL  =parseFloat(document.getElementById('m-len').value);
+  const rawEps=parseFloat(document.getElementById('m-rough').value);
+  const rawQ  =parseFloat(document.getElementById('m-flow').value);
+  const N     =parseInt(document.getElementById('m-outlets').value);
+  const firstOpt=parseInt(document.getElementById('m-first').value);
+  const rawRho=parseFloat(document.getElementById('m-rho').value);
+  const rawMu =parseFloat(document.getElementById('m-mu').value);
+  const rawHup=parseFloat(document.getElementById('m-hup').value);
 
-  const rawD    = parseFloat(document.getElementById('m-diam').value);
-  const rawL    = parseFloat(document.getElementById('m-len').value);
-  const rawEps  = parseFloat(document.getElementById('m-rough').value);
-  const rawQ    = parseFloat(document.getElementById('m-flow').value);
-  const N       = parseInt(document.getElementById('m-outlets').value);
-  const firstOpt= parseInt(document.getElementById('m-first').value);
-  const rawRho  = parseFloat(document.getElementById('m-rho').value);
-  const rawMu   = parseFloat(document.getElementById('m-mu').value);
-  const rawHup  = parseFloat(document.getElementById('m-hup').value);
-
-  if ([rawD,rawL,rawEps,rawQ,rawRho,rawMu].some(isNaN) ||
-      rawD<=0 || rawL<=0 || rawQ<=0 || N<2 || rawRho<=0 || rawMu<=0) {
-    showErr('m-error', 'Please enter valid positive values. Outlets must be ≥ 2.'); return;
+  if ([rawD,rawL,rawEps,rawQ,rawRho,rawMu].some(isNaN)||rawD<=0||rawL<=0||rawQ<=0||N<2||rawRho<=0||rawMu<=0) {
+    showErr('m-error','Please enter valid positive values. Outlets must be ≥ 2.'); return;
   }
 
-  // Convert to SI
-  const D    = isImp ? rawD * C.in_to_m              : rawD;
-  const L    = isImp ? rawL * C.ft_to_m              : rawL;
-  const eps  = isImp ? rawEps * C.ft_to_m            : rawEps;
-  const Qtot = isImp ? rawQ * C.gpm_to_m3s           : rawQ / 3600;
-  const rho  = isImp ? rawRho * C.slug_ft3_to_kg_m3  : rawRho;
-  const mu   = isImp ? rawMu * C.lbfts_to_Pas        : rawMu;
-  const Hup  = isImp ? rawHup * C.ft_to_m            : rawHup;
+  const D   =isImp?rawD*C.in_to_m:rawD;
+  const L   =isImp?rawL*C.ft_to_m:rawL;
+  const eps =isImp?rawEps*C.ft_to_m:rawEps;
+  const Qtot=isImp?rawQ*C.gpm_to_m3s:rawQ/3600;
+  const rho =isImp?rawRho*C.slug_ft3_to_kg_m3:rawRho;
+  const mu  =isImp?rawMu*C.lbfts_to_Pas:rawMu;
+  const Hup =isImp?rawHup*C.ft_to_m:rawHup;
 
-  const A     = Math.PI * D * D / 4;
-  const Vin   = Qtot / A;
-  const Re    = rho * Vin * D / mu;
-  const epsD  = eps / D;
-  const f     = colebrookWhite(Re, epsD);
-  const g     = 9.81;
-  const hf_s  = f * (L / D) * (Vin * Vin / (2 * g));
-  const F     = christiansenF(N, firstOpt === 0);
-  const hl    = F * hf_s;
-  const Hdown = Hup - hl;
-  const spacing_m = L / N;
-  const Qout_si   = Qtot / N; // m³/s per outlet
-  const pct       = ((1 - F) * 100).toFixed(1);
+  const A=Math.PI*D*D/4, Vin=Qtot/A, Re=rho*Vin*D/mu, epsD=eps/D;
+  const f=colebrookWhite(Re,epsD), g=9.81;
+  const hf_s=f*(L/D)*(Vin*Vin/(2*g));
+  const F=christiansenF(N, firstOpt===0);
+  const hl=F*hf_s, Hdown=Hup-hl;
+  const spacing_m=L/N, Qout_si=Qtot/N;
+  const pct=((1-F)*100).toFixed(1), hSym=isImp?'ft':'m';
 
-  // Display conversions
-  const hSym   = isImp ? 'ft' : 'm';
-  const dispVin   = fromSI(Vin, 'vel');
-  const dispHfs   = fromSI(hf_s, 'head');
-  const dispHl    = fromSI(hl, 'head');
-  const dispHup   = fromSI(Hup, 'head');
-  const dispHdown = fromSI(Hdown, 'head');
-  const dispSpacing = isImp ? (spacing_m / C.ft_to_m).toFixed(3) + ' ft' : spacing_m.toFixed(3) + ' m';
-  const dispQout = isImp
-    ? (Qout_si / C.gpm_to_m3s).toFixed(4) + ' gpm'
-    : (Qout_si * 3600).toFixed(4) + ' m³/h';
+  document.getElementById('m-vel').textContent        = fromSI(Vin,'vel').toFixed(4);
+  document.getElementById('m-re').textContent         = Math.round(Re).toLocaleString();
+  document.getElementById('m-f').textContent          = f.toFixed(6);
+  document.getElementById('m-F').textContent          = F.toFixed(6);
+  document.getElementById('m-hf-single').textContent  = fromSI(hf_s,'head').toFixed(4);
+  document.getElementById('m-hl').textContent         = fromSI(hl,'head').toFixed(4);
+  document.getElementById('m-hup-out').textContent    = fromSI(Hup,'head').toFixed(3)+' '+hSym;
+  document.getElementById('m-hdown-out').textContent  = fromSI(Hdown,'head').toFixed(4)+' '+hSym;
+  document.getElementById('m-qoutlet').textContent    = isImp?(Qout_si/C.gpm_to_m3s).toFixed(4)+' gpm':(Qout_si*3600).toFixed(4)+' m³/h';
+  document.getElementById('m-spacing').textContent    = isImp?(spacing_m/C.ft_to_m).toFixed(3)+' ft':spacing_m.toFixed(3)+' m';
+  document.getElementById('m-rrel').textContent       = epsD.toExponential(4);
+  document.getElementById('m-reduction').textContent  = pct+'% less than single-pipe hf';
+  document.getElementById('m-christn-vis').textContent = `F · hf = ${F.toFixed(4)} × ${fromSI(hf_s,'head').toFixed(4)} ${hSym} = ${fromSI(hl,'head').toFixed(4)} ${hSym}   |   ${N} outlets save ${pct}% friction vs. full flow`;
 
-  document.getElementById('m-vel').textContent       = dispVin.toFixed(4);
-  document.getElementById('m-re').textContent        = Math.round(Re).toLocaleString();
-  document.getElementById('m-f').textContent         = f.toFixed(6);
-  document.getElementById('m-F').textContent         = F.toFixed(6);
-  document.getElementById('m-hf-single').textContent = dispHfs.toFixed(4);
-  document.getElementById('m-hl').textContent        = dispHl.toFixed(4);
-  document.getElementById('m-hup-out').textContent   = dispHup.toFixed(3) + ' ' + hSym;
-  document.getElementById('m-hdown-out').textContent = dispHdown.toFixed(4) + ' ' + hSym;
-  document.getElementById('m-qoutlet').textContent   = dispQout;
-  document.getElementById('m-spacing').textContent   = dispSpacing;
-  document.getElementById('m-rrel').textContent      = epsD.toExponential(4);
-  document.getElementById('m-reduction').textContent = pct + '% less than single-pipe hf';
-
+  document.getElementById('m-placeholder').style.display='none';
   document.getElementById('m-results').classList.add('show');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// TAB SWITCHING & MISC
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════
 function switchTab(t) {
-  document.querySelectorAll('.nav-tab').forEach((el, i) =>
-    el.classList.toggle('active', ['single','multi','lookup'][i] === t)
+  const tabs = ['single','multi','lookup'];
+  document.querySelectorAll('.nav-tab').forEach((el,i) =>
+    el.classList.toggle('active', tabs[i]===t)
   );
-  document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
-  document.getElementById('panel-' + t).classList.add('active');
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+t).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
 }
 
-// ─── Init ──────────────────────────────────────────────────────
-renderRoughness();
-renderViscosity();
-updateLookupHeaders();
+renderRoughness(); renderViscosity(); updateLookupHeaders();
 </script>
 </body>
 </html>
